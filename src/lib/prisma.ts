@@ -5,15 +5,27 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-if (!globalForPrisma.prisma) {
+function createPrismaClient(): PrismaClient {
   const connectionString = process.env.DATABASE_URL;
+
   if (!connectionString) {
-    console.error("[prisma] DATABASE_URL is not set!");
+    console.error("[prisma] FATAL: DATABASE_URL is not set!");
+    // Return a client that will fail on first query with a clear error
+    return new PrismaClient();
   }
-  const adapter = new PrismaPg({
-    connectionString: connectionString || "",
-  });
-  globalForPrisma.prisma = new PrismaClient({ adapter });
+
+  try {
+    const adapter = new PrismaPg({ connectionString });
+    return new PrismaClient({ adapter });
+  } catch (err) {
+    console.error("[prisma] Failed to create PrismaPg adapter:", err);
+    // Fallback: standard client without adapter
+    return new PrismaClient();
+  }
+}
+
+if (!globalForPrisma.prisma) {
+  globalForPrisma.prisma = createPrismaClient();
 }
 
 export const prisma: PrismaClient = globalForPrisma.prisma;
