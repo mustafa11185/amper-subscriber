@@ -24,14 +24,22 @@ export async function POST(req: NextRequest) {
 
     console.log("[lookup] Normalized:", withHyphens);
 
-    // Try exact match
+    // Try new format with hyphens (e.g. "BG-05-001-482")
     let subscriber = await prisma.subscriber.findFirst({
       where: { access_code: withHyphens, is_active: true },
       include: { branch: { select: { name: true } } },
     });
 
-    // Fallback: try raw input
+    // Fallback: try without hyphens (e.g. "BG05001482")
     if (!subscriber && withHyphens !== normalized) {
+      subscriber = await prisma.subscriber.findFirst({
+        where: { access_code: normalized, is_active: true },
+        include: { branch: { select: { name: true } } },
+      });
+    }
+
+    // Fallback: try old 6-digit format (e.g. "410353")
+    if (!subscriber && /^\d{6}$/.test(normalized)) {
       subscriber = await prisma.subscriber.findFirst({
         where: { access_code: normalized, is_active: true },
         include: { branch: { select: { name: true } } },
