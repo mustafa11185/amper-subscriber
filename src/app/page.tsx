@@ -52,8 +52,8 @@ export default function HomePage() {
         setCode('')
         inputRef.current?.focus()
       }
-    } catch {
-      setError('خطأ في الاتصال')
+    } catch (err: any) {
+      setError(`خطأ في الاتصال${err?.message ? ': ' + err.message : ''}`)
     }
     setLoading(false)
   }

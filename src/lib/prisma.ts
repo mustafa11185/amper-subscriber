@@ -6,8 +6,12 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 if (!globalForPrisma.prisma) {
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    console.error("[prisma] DATABASE_URL is not set!");
+  }
   const adapter = new PrismaPg({
-    connectionString: process.env.DATABASE_URL!,
+    connectionString: connectionString || "",
   });
   globalForPrisma.prisma = new PrismaClient({ adapter });
 }

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 
 export async function GET(req: NextRequest) {
+  try {
   const cookieStore = await cookies();
   const subscriberId = cookieStore.get("subscriber_id")?.value;
 
@@ -121,4 +122,8 @@ export async function GET(req: NextRequest) {
       collector_call_enabled: true,
     },
   });
+  } catch (error: any) {
+    console.error('[subscriber/me] Error:', error?.message || error);
+    return NextResponse.json({ error: "خطأ في الخادم" }, { status: 500 });
+  }
 }
