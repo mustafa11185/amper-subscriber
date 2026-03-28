@@ -1,65 +1,128 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { useState, useRef, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { Loader2, Zap } from 'lucide-react'
+
+export default function HomePage() {
+  const router = useRouter()
+  const [digits, setDigits] = useState(['', '', '', '', '', ''])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([])
+
+  // Check if already logged in
+  useEffect(() => {
+    const sid = document.cookie.split(';').find(c => c.trim().startsWith('subscriber_id='))
+    if (sid) router.replace('/home')
+  }, [router])
+
+  function handleDigit(index: number, value: string) {
+    if (!/^\d?$/.test(value)) return
+    const newDigits = [...digits]
+    newDigits[index] = value
+    setDigits(newDigits)
+    setError('')
+
+    if (value && index < 5) {
+      inputRefs.current[index + 1]?.focus()
+    }
+
+    // Auto-submit when all 6 digits entered
+    if (value && index === 5 && newDigits.every(d => d)) {
+      handleSubmit(newDigits.join(''))
+    }
+  }
+
+  function handleKeyDown(index: number, e: React.KeyboardEvent) {
+    if (e.key === 'Backspace' && !digits[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus()
+    }
+  }
+
+  function handlePaste(e: React.ClipboardEvent) {
+    e.preventDefault()
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6)
+    if (pasted.length === 6) {
+      setDigits(pasted.split(''))
+      handleSubmit(pasted)
+    }
+  }
+
+  async function handleSubmit(code?: string) {
+    const c = code || digits.join('')
+    if (c.length !== 6) { setError('ادخل الكود كاملاً — 6 أرقام'); return }
+    setLoading(true)
+    setError('')
+    try {
+      const res = await fetch('/api/lookup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: c }),
+      })
+      const data = await res.json()
+      if (data.ok) {
+        router.push('/home')
+      } else {
+        setError(data.error || 'الكود غير صحيح')
+        setDigits(['', '', '', '', '', ''])
+        inputRefs.current[0]?.focus()
+      }
+    } catch {
+      setError('خطأ في الاتصال')
+    }
+    setLoading(false)
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-dvh flex flex-col items-center justify-center p-6" style={{ background: '#0D1117' }}>
+      <div className="w-full max-w-[340px] space-y-8 text-center">
+        {/* Logo */}
+        <div className="flex items-center justify-center gap-2">
+          <Zap className="w-8 h-8" style={{ color: '#1B4FD8' }} />
+          <h1 className="text-2xl font-bold" style={{ color: '#E2E8F0', fontFamily: 'Rajdhani, sans-serif' }}>أمبير</h1>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        <p className="text-base font-bold" style={{ color: '#E2E8F0' }}>ادخل كودك</p>
+
+        {/* 6-digit input */}
+        <div className="flex justify-center gap-2" dir="ltr" onPaste={handlePaste}>
+          {digits.map((d, i) => (
+            <input
+              key={i}
+              ref={el => { inputRefs.current[i] = el }}
+              type="tel"
+              inputMode="numeric"
+              maxLength={1}
+              value={d}
+              onChange={e => handleDigit(i, e.target.value)}
+              onKeyDown={e => handleKeyDown(i, e)}
+              className="w-12 h-14 rounded-xl text-center text-2xl font-num font-bold outline-none transition-all"
+              style={{
+                background: '#1E293B',
+                border: d ? '2px solid #1B4FD8' : '2px solid #334155',
+                color: '#E2E8F0',
+                caretColor: '#1B4FD8',
+              }}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          ))}
         </div>
-      </main>
+
+        {error && <p className="text-xs font-bold" style={{ color: '#EF4444' }}>{error}</p>}
+
+        <button
+          onClick={() => handleSubmit()}
+          disabled={loading || digits.some(d => !d)}
+          className="w-full h-14 rounded-2xl text-white text-base font-bold disabled:opacity-50 flex items-center justify-center gap-2"
+          style={{ background: '#1B4FD8', boxShadow: '0 4px 20px rgba(27,79,216,0.3)' }}
+        >
+          {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
+          {loading ? 'جاري الدخول...' : 'دخول'}
+        </button>
+
+        <p className="text-xs" style={{ color: '#475569' }}>الكود موجود في رسالة واتساب من مولدتك</p>
+        <p className="text-[10px]" style={{ color: '#334155' }}>مدعوم من أمبير ⚡</p>
+      </div>
     </div>
-  );
+  )
 }

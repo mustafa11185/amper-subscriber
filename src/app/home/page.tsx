@@ -1,0 +1,281 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import {
+  Zap, CreditCard, Phone, AlertTriangle, CheckCircle2,
+  Clock, Loader2, FileText, PhoneCall, LogOut,
+} from 'lucide-react'
+import toast, { Toaster } from 'react-hot-toast'
+
+const fmt = (n: number) => Number(n).toLocaleString('en')
+const MONTHS = ['', 'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
+
+type SubData = {
+  id: string; name: string; serial_number: string; subscription_type: string
+  amperage: number; total_debt: number; branch_name: string; price_per_amp: number | null
+  current_invoice: { id: string; billing_month: number; billing_year: number; total_amount_due: number; amount_paid: number; is_fully_paid: boolean } | null
+  invoices_history: { id: string; billing_month: number; billing_year: number; total_amount_due: number; amount_paid: number; is_fully_paid: boolean }[]
+  generator_status: { name: string; run_status: boolean; last_seen: string | null; is_online: boolean } | null
+  settings: { primary_color: string; welcome_message: string | null; active_gateway: string; collector_call_enabled: boolean; furatpay_enabled: boolean }
+}
+
+type Tab = 'home' | 'pay' | 'history' | 'contact'
+
+export default function SubscriberHomePage() {
+  const router = useRouter()
+  const [data, setData] = useState<SubData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [tab, setTab] = useState<Tab>('home')
+  const [callingCollector, setCallingCollector] = useState(false)
+  const [payingCard, setPayingCard] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/subscriber/me')
+      .then(r => { if (!r.ok) throw new Error(); return r.json() })
+      .then(d => { setData(d); setLoading(false) })
+      .catch(() => { router.replace('/'); })
+  }, [router])
+
+  if (loading || !data) {
+    return (
+      <div className="flex items-center justify-center min-h-dvh" style={{ background: '#0D1117' }}>
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#1B4FD8' }} />
+      </div>
+    )
+  }
+
+  const brandColor = data.settings.primary_color || '#1B4FD8'
+  const inv = data.current_invoice
+  const invoiceDue = inv ? inv.total_amount_due - inv.amount_paid : 0
+  const hasPayment = data.settings.furatpay_enabled || data.settings.active_gateway === 'aps'
+
+  function logout() {
+    document.cookie = 'subscriber_id=; path=/; max-age=0'
+    router.replace('/')
+  }
+
+  async function handleCallCollector() {
+    setCallingCollector(true)
+    try {
+      const res = await fetch('/api/collector-request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+      if (res.ok) toast.success('تم إرسال الطلب — سيتواصل معك الجابي')
+      else toast.error('فشل إرسال الطلب')
+    } catch { toast.error('خطأ') }
+    setCallingCollector(false)
+  }
+
+  async function handlePayCard() {
+    setPayingCard(true)
+    try {
+      const totalAmount = invoiceDue + (data?.total_debt ?? 0)
+      const invoiceId = inv?.id || null
+      const res = await fetch('/api/payment/init', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invoice_id: invoiceId, amount: totalAmount }),
+      })
+      const result = await res.json()
+      if (result.payment_url) { window.location.href = result.payment_url }
+      else { toast.error(result.error || 'فشل إنشاء رابط الدفع'); setPayingCard(false) }
+    } catch { toast.error('خطأ في الاتصال'); setPayingCard(false) }
+  }
+
+  const tabs: { key: Tab; icon: any; label: string }[] = [
+    { key: 'home', icon: Zap, label: 'الرئيسية' },
+    { key: 'pay', icon: CreditCard, label: 'الدفع' },
+    { key: 'history', icon: FileText, label: 'الفواتير' },
+    { key: 'contact', icon: Phone, label: 'تواصل' },
+  ]
+
+  return (
+    <>
+      <Toaster position="top-center" />
+      <div className="flex-1 pb-20" style={{ background: '#0D1117', color: '#E2E8F0' }}>
+        {/* Header */}
+        <div className="p-4 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-bold">{data.name}</p>
+            <p className="text-[10px]" style={{ color: '#64748B' }}>{data.branch_name}</p>
+          </div>
+          <button onClick={logout} className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#1E293B' }}>
+            <LogOut className="w-4 h-4" style={{ color: '#64748B' }} />
+          </button>
+        </div>
+
+        <div className="px-4 space-y-4">
+          {tab === 'home' && (
+            <>
+              {/* Generator status */}
+              {data.generator_status && (
+                <div className="rounded-2xl p-4" style={{ background: '#1E293B' }}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ background: data.generator_status.run_status ? '#22C55E' : '#EF4444' }} />
+                    <span className="text-xs">{data.generator_status.name}</span>
+                    <span className="text-[10px]" style={{ color: '#64748B' }}>{data.generator_status.run_status ? 'تعمل' : 'متوقفة'}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Invoice card */}
+              <div className="rounded-2xl p-5 text-center text-white" style={{ background: `linear-gradient(135deg, ${brandColor}, ${brandColor}CC)` }}>
+                <p className="text-xs opacity-80 mb-1">{inv ? `فاتورة شهر ${inv.billing_month} — ${MONTHS[inv.billing_month]}` : 'لا توجد فاتورة'}</p>
+                <p className="font-num text-3xl font-bold">{fmt(invoiceDue)}<span className="text-sm mr-1 opacity-60">د.ع</span></p>
+                {inv?.is_fully_paid && <p className="text-xs mt-1 opacity-80">✅ مدفوعة</p>}
+              </div>
+
+              {/* Debt */}
+              {data.total_debt > 0 && (
+                <div className="rounded-2xl p-4 flex items-center justify-between" style={{ background: 'rgba(239,68,68,0.1)' }}>
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4" style={{ color: '#EF4444' }} />
+                    <span className="text-xs">ديون سابقة</span>
+                  </div>
+                  <span className="font-num text-sm font-bold" style={{ color: '#EF4444' }}>{fmt(data.total_debt)} د.ع</span>
+                </div>
+              )}
+            </>
+          )}
+
+          {tab === 'pay' && (
+            <div className="space-y-4">
+              <h2 className="text-lg font-bold">الدفع</h2>
+              {!hasPayment ? (
+                <div className="rounded-2xl p-6 text-center" style={{ background: '#1E293B' }}>
+                  <CreditCard className="w-10 h-10 mx-auto mb-3" style={{ color: '#64748B' }} />
+                  <p className="text-sm font-bold mb-1">الدفع متاح عند الجابي فقط</p>
+                  <p className="text-xs mb-4" style={{ color: '#64748B' }}>الدفع الإلكتروني غير مفعّل حالياً</p>
+                  {data.settings.collector_call_enabled && (
+                    <button onClick={handleCallCollector} disabled={callingCollector}
+                      className="w-full h-12 rounded-xl text-sm font-bold text-white disabled:opacity-60" style={{ background: brandColor }}>
+                      {callingCollector ? 'جاري...' : '📞 أرسل الجابي'}
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="rounded-2xl p-5 text-center" style={{ background: '#1E293B' }}>
+                    <p className="text-xs mb-1" style={{ color: '#64748B' }}>المبلغ المستحق</p>
+                    <p className="font-num text-3xl font-bold">{fmt(invoiceDue + data.total_debt)}<span className="text-sm mr-1" style={{ color: '#64748B' }}>د.ع</span></p>
+                  </div>
+                  <button onClick={handlePayCard} disabled={payingCard || (invoiceDue + data.total_debt) <= 0}
+                    className="w-full h-14 rounded-2xl text-white text-base font-bold disabled:opacity-50 flex items-center justify-center gap-2"
+                    style={{ background: '#2B3990', boxShadow: '0 4px 20px rgba(43,57,144,0.3)' }}>
+                    {payingCard ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
+                    {payingCard ? 'جاري التحويل...' : '💳 ادفع بالماستركارد'}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {tab === 'history' && (
+            <div className="space-y-3">
+              <h2 className="text-lg font-bold">سجل الفواتير</h2>
+              {data.invoices_history.length === 0 ? (
+                <p className="text-center text-xs py-8" style={{ color: '#64748B' }}>لا توجد فواتير</p>
+              ) : data.invoices_history.map(inv => (
+                <div key={inv.id} className="rounded-xl p-3 flex items-center justify-between" style={{ background: '#1E293B' }}>
+                  <div>
+                    <p className="text-xs font-bold">شهر {inv.billing_month} — {MONTHS[inv.billing_month]} {inv.billing_year}</p>
+                  </div>
+                  <div className="text-left">
+                    <p className="font-num text-xs font-bold">{fmt(inv.total_amount_due)} د.ع</p>
+                    <span className="text-[10px]" style={{ color: inv.is_fully_paid ? '#22C55E' : '#EF4444' }}>
+                      {inv.is_fully_paid ? '✅ مدفوعة' : '⏳ غير مدفوعة'}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {tab === 'contact' && (
+            <div className="space-y-4">
+              <h2 className="text-lg font-bold">تواصل</h2>
+              {data.settings.collector_call_enabled && (
+                <button onClick={handleCallCollector} disabled={callingCollector}
+                  className="w-full h-14 rounded-2xl text-white text-sm font-bold disabled:opacity-60 flex items-center justify-center gap-2"
+                  style={{ background: brandColor }}>
+                  <PhoneCall className="w-5 h-5" />
+                  {callingCollector ? 'جاري...' : '📞 اطلب زيارة الجابي'}
+                </button>
+              )}
+              <button onClick={logout}
+                className="w-full h-12 rounded-xl text-sm font-medium flex items-center justify-center gap-2"
+                style={{ background: '#1E293B', color: '#EF4444' }}>
+                <LogOut className="w-4 h-4" /> تسجيل الخروج
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Bottom nav */}
+        <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ background: '#0D1117', borderTop: '1px solid #1E293B' }}>
+          <div className="max-w-[390px] mx-auto flex items-center justify-around h-16 pb-[env(safe-area-inset-bottom)]">
+            {tabs.map(t => {
+              const isActive = tab === t.key
+              const Icon = t.icon
+              return (
+                <button key={t.key} onClick={() => setTab(t.key)} className="flex flex-col items-center gap-1 py-2 px-3">
+                  <Icon className="w-5 h-5" style={{ color: isActive ? brandColor : '#64748B' }} />
+                  <span className="text-[10px]" style={{ color: isActive ? brandColor : '#64748B', fontWeight: isActive ? 700 : 400 }}>{t.label}</span>
+                </button>
+              )
+            })}
+          </div>
+        </nav>
+
+        {/* PWA install banner */}
+        <InstallBanner />
+      </div>
+    </>
+  )
+}
+
+function InstallBanner() {
+  const [prompt, setPrompt] = useState<any>(null)
+  const [show, setShow] = useState(false)
+  const [isIOS, setIsIOS] = useState(false)
+
+  useEffect(() => {
+    if (localStorage.getItem('pwa_dismissed') === 'true') return
+    // iOS detection
+    const ua = navigator.userAgent
+    if (/iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream) {
+      const standalone = (navigator as any).standalone
+      if (!standalone) { setIsIOS(true); setShow(true) }
+      return
+    }
+    // Android/Chrome
+    const handler = (e: any) => { e.preventDefault(); setPrompt(e); setShow(true) }
+    window.addEventListener('beforeinstallprompt', handler)
+    return () => window.removeEventListener('beforeinstallprompt', handler)
+  }, [])
+
+  if (!show) return null
+
+  return (
+    <div className="fixed bottom-20 left-4 right-4 z-40 max-w-[358px] mx-auto">
+      <div className="rounded-2xl p-4" style={{ background: '#1E293B', border: '1px solid #334155', boxShadow: '0 8px 30px rgba(0,0,0,0.5)' }}>
+        <div className="flex items-start justify-between mb-2">
+          <p className="text-xs font-bold" style={{ color: '#E2E8F0' }}>أضف التطبيق لشاشتك الرئيسية</p>
+          <button onClick={() => { setShow(false); localStorage.setItem('pwa_dismissed', 'true') }}
+            className="text-xs" style={{ color: '#64748B' }}>✕</button>
+        </div>
+        {isIOS ? (
+          <p className="text-[10px] mb-2" style={{ color: '#94A3B8' }}>
+            اضغط <span style={{ color: '#1B4FD8' }}>مشاركة ↗</span> ثم <span style={{ color: '#1B4FD8' }}>إضافة للشاشة الرئيسية</span>
+          </p>
+        ) : (
+          <button onClick={async () => {
+            if (prompt) { prompt.prompt(); const r = await prompt.userChoice; if (r.outcome === 'accepted') setShow(false) }
+          }}
+            className="w-full h-9 rounded-xl text-white text-xs font-bold" style={{ background: '#1B4FD8' }}>
+            إضافة للشاشة الرئيسية
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
