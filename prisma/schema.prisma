@@ -814,11 +814,12 @@ model SubscriberAppSettings {
 }
 
 model CollectorCallRequest {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   subscriber_id String
   branch_id     String
-  requested_at  DateTime @default(now())
-  status        String   @default("pending")
+  requested_at  DateTime  @default(now())
+  resolved_at   DateTime?
+  status        String    @default("pending")
   subscriber    Subscriber @relation(fields: [subscriber_id], references: [id])
   @@index([branch_id, status])
   @@map("collector_call_requests")
