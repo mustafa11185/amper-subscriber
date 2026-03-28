@@ -59,9 +59,13 @@ export default function SubscriberHomePage() {
     setCallingCollector(true)
     try {
       const res = await fetch('/api/collector-request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
-      if (res.ok) toast.success('تم إرسال الطلب — سيتواصل معك الجابي')
-      else toast.error('فشل إرسال الطلب')
-    } catch { toast.error('خطأ') }
+      const result = await res.json()
+      if (res.ok && result.ok) {
+        toast.success(result.message || 'تم إرسال الطلب — سيتواصل معك الجابي')
+      } else {
+        toast.error(result.error || 'فشل إرسال الطلب')
+      }
+    } catch { toast.error('خطأ في الاتصال — حاول مرة أخرى') }
     setCallingCollector(false)
   }
 
@@ -161,7 +165,7 @@ export default function SubscriberHomePage() {
                 <div className="rounded-2xl p-6 text-center" style={{ background: '#1E293B' }}>
                   <CreditCard className="w-10 h-10 mx-auto mb-3" style={{ color: '#64748B' }} />
                   <p className="text-sm font-bold mb-1">الدفع متاح عند الجابي فقط</p>
-                  <p className="text-xs mb-4" style={{ color: '#64748B' }}>الدفع الإلكتروني غير مفعّل حالياً</p>
+                  <p className="text-xs mb-4" style={{ color: '#64748B' }}>تواصل مع صاحب المولدة لتفعيل الدفع الإلكتروني</p>
                   {data.settings.collector_call_enabled && (
                     <button onClick={handleCallCollector} disabled={callingCollector}
                       className="w-full h-12 rounded-xl text-sm font-bold text-white disabled:opacity-60" style={{ background: brandColor }}>
