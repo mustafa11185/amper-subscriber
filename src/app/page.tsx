@@ -6,10 +6,10 @@ import { Loader2, Zap } from 'lucide-react'
 
 export default function HomePage() {
   const router = useRouter()
-  const [digits, setDigits] = useState(['', '', '', '', '', ''])
+  const [code, setCode] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([])
+  const inputRef = useRef<HTMLInputElement>(null)
 
   // Check if already logged in
   useEffect(() => {
@@ -17,41 +17,25 @@ export default function HomePage() {
     if (sid) router.replace('/home')
   }, [router])
 
-  function handleDigit(index: number, value: string) {
-    if (!/^\d?$/.test(value)) return
-    const newDigits = [...digits]
-    newDigits[index] = value
-    setDigits(newDigits)
-    setError('')
-
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus()
-    }
-
-    // Auto-submit when all 6 digits entered
-    if (value && index === 5 && newDigits.every(d => d)) {
-      handleSubmit(newDigits.join(''))
-    }
+  function cleanCode(raw: string): string {
+    return raw.toUpperCase().replace(/\s+/g, '').replace(/[^A-Z0-9-]/g, '')
   }
 
-  function handleKeyDown(index: number, e: React.KeyboardEvent) {
-    if (e.key === 'Backspace' && !digits[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus()
-    }
+  function handleChange(raw: string) {
+    setCode(cleanCode(raw))
+    setError('')
   }
 
   function handlePaste(e: React.ClipboardEvent) {
     e.preventDefault()
-    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6)
-    if (pasted.length === 6) {
-      setDigits(pasted.split(''))
-      handleSubmit(pasted)
-    }
+    const pasted = e.clipboardData.getData('text')
+    setCode(cleanCode(pasted))
+    setError('')
   }
 
-  async function handleSubmit(code?: string) {
-    const c = code || digits.join('')
-    if (c.length !== 6) { setError('ادخل الكود كاملاً — 6 أرقام'); return }
+  async function handleSubmit() {
+    const c = cleanCode(code)
+    if (c.length < 10) { setError('ادخل الكود كاملاً'); return }
     setLoading(true)
     setError('')
     try {
@@ -65,8 +49,8 @@ export default function HomePage() {
         router.push('/home')
       } else {
         setError(data.error || 'الكود غير صحيح')
-        setDigits(['', '', '', '', '', ''])
-        inputRefs.current[0]?.focus()
+        setCode('')
+        inputRef.current?.focus()
       }
     } catch {
       setError('خطأ في الاتصال')
@@ -85,34 +69,37 @@ export default function HomePage() {
 
         <p className="text-base font-bold" style={{ color: '#E2E8F0' }}>ادخل كودك</p>
 
-        {/* 6-digit input */}
-        <div className="flex justify-center gap-2" dir="ltr" onPaste={handlePaste}>
-          {digits.map((d, i) => (
-            <input
-              key={i}
-              ref={el => { inputRefs.current[i] = el }}
-              type="tel"
-              inputMode="numeric"
-              maxLength={1}
-              value={d}
-              onChange={e => handleDigit(i, e.target.value)}
-              onKeyDown={e => handleKeyDown(i, e)}
-              className="w-12 h-14 rounded-xl text-center text-2xl font-num font-bold outline-none transition-all"
-              style={{
-                background: '#1E293B',
-                border: d ? '2px solid #1B4FD8' : '2px solid #334155',
-                color: '#E2E8F0',
-                caretColor: '#1B4FD8',
-              }}
-            />
-          ))}
-        </div>
+        {/* Code input */}
+        <input
+          ref={inputRef}
+          type="text"
+          inputMode="text"
+          value={code}
+          onChange={e => handleChange(e.target.value)}
+          onPaste={handlePaste}
+          onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+          placeholder="BG-05-001-482"
+          dir="ltr"
+          autoFocus
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck={false}
+          className="w-full rounded-2xl text-center font-mono font-bold outline-none tracking-wider"
+          style={{
+            height: 56,
+            fontSize: 22,
+            background: '#1E293B',
+            border: code ? '2px solid #1B4FD8' : '2px solid #334155',
+            color: '#E2E8F0',
+            caretColor: '#1B4FD8',
+          }}
+        />
 
         {error && <p className="text-xs font-bold" style={{ color: '#EF4444' }}>{error}</p>}
 
         <button
-          onClick={() => handleSubmit()}
-          disabled={loading || digits.some(d => !d)}
+          onClick={handleSubmit}
+          disabled={loading || cleanCode(code).length < 10}
           className="w-full h-14 rounded-2xl text-white text-base font-bold disabled:opacity-50 flex items-center justify-center gap-2"
           style={{ background: '#1B4FD8', boxShadow: '0 4px 20px rgba(27,79,216,0.3)' }}
         >

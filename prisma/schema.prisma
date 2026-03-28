@@ -73,7 +73,9 @@ model Tenant {
   is_trial              Boolean               @default(false)
   trial_ends_at         DateTime?
   trial_subscriber_limit Int                  @default(20)
+  subscription_ends_at  DateTime?
   grace_period_ends_at  DateTime?
+  is_in_grace_period    Boolean               @default(false)
   locked_at             DateTime?
   custom_max_generators Int?
   custom_max_subscribers Int?
@@ -365,6 +367,7 @@ model Subscriber {
   subscription_type   String    @default("normal")
   total_debt          Decimal   @default(0) @db.Decimal(12,2)
   access_code         String?   @unique
+  needs_attention     Boolean   @default(false)
   is_active           Boolean   @default(true)
   deleted_at          DateTime?
   notes               String?

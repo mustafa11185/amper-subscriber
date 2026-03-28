@@ -38,6 +38,29 @@ export async function GET(req: NextRequest) {
   const lastDevice = (generator as any)?.iot_devices?.[0] ?? null;
   const branch = subscriber.branch;
 
+  // Today's hours calculation
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  let goldHoursToday = 0;
+  let normalHoursToday = 0;
+
+  if (generator) {
+    const normalCuts = await prisma.normalCutLog.findMany({
+      where: {
+        branch_id: subscriber.branch_id,
+        cut_start: { gte: todayStart },
+      },
+    });
+    const totalNormalMin = normalCuts.reduce((sum, c) => sum + (c.duration_min ?? 0), 0);
+    normalHoursToday = Math.round((totalNormalMin / 60) * 10) / 10;
+
+    // Gold hours = total run hours minus normal cut hours (assume 24h cycle)
+    // If generator is running, estimate hours since midnight
+    const hoursSinceMidnight = (now.getTime() - todayStart.getTime()) / (1000 * 60 * 60);
+    goldHoursToday = Math.round((hoursSinceMidnight - normalHoursToday) * 10) / 10;
+    if (goldHoursToday < 0) goldHoursToday = 0;
+  }
+
   // Pricing
   const pricing = await prisma.monthlyPricing.findFirst({
     where: { branch_id: subscriber.branch_id },
@@ -79,6 +102,8 @@ export async function GET(req: NextRequest) {
       run_status: generator.run_status,
       last_seen: lastDevice?.last_seen?.toISOString() ?? null,
       is_online: lastDevice?.is_online ?? false,
+      gold_hours_today: goldHoursToday,
+      normal_hours_today: normalHoursToday,
     } : null,
     settings: settings ? {
       is_active: (settings as any).is_active,

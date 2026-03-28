@@ -5,14 +5,31 @@ import { cookies } from "next/headers";
 export async function POST(req: NextRequest) {
   const { code } = await req.json();
 
-  if (!code || code.length !== 6) {
+  if (!code || code.trim().length < 3) {
     return NextResponse.json({ error: "الكود غير صحيح" }, { status: 400 });
   }
 
-  const subscriber = await prisma.subscriber.findFirst({
-    where: { access_code: code, is_active: true },
+  // Normalize: uppercase, strip spaces and non-alphanumeric (except hyphens)
+  const normalized = code.trim().toUpperCase().replace(/\s+/g, '').replace(/[^A-Z0-9-]/g, '');
+
+  // Build hyphenated version if entered without hyphens (e.g. "BG05001482" → "BG-05-001-482")
+  const withHyphens = normalized.includes('-')
+    ? normalized
+    : normalized.replace(/^([A-Z]{2})(\d{2})(\d{3})(\d{3})$/, '$1-$2-$3-$4');
+
+  // Try exact match with hyphenated code
+  let subscriber = await prisma.subscriber.findFirst({
+    where: { access_code: withHyphens, is_active: true },
     include: { branch: { select: { name: true } } },
   });
+
+  // Fallback: try the raw normalized input (handles edge cases)
+  if (!subscriber && withHyphens !== normalized) {
+    subscriber = await prisma.subscriber.findFirst({
+      where: { access_code: normalized, is_active: true },
+      include: { branch: { select: { name: true } } },
+    });
+  }
 
   if (!subscriber) {
     return NextResponse.json({ error: "الكود غير صحيح" }, { status: 404 });
@@ -22,7 +39,7 @@ export async function POST(req: NextRequest) {
   cookieStore.set("subscriber_id", subscriber.id, {
     httpOnly: true,
     path: "/",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 30 * 24 * 60 * 60,
     sameSite: "lax",
   });
 

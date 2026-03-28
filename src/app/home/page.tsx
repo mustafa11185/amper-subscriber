@@ -16,7 +16,7 @@ type SubData = {
   amperage: number; total_debt: number; branch_name: string; price_per_amp: number | null
   current_invoice: { id: string; billing_month: number; billing_year: number; total_amount_due: number; amount_paid: number; is_fully_paid: boolean } | null
   invoices_history: { id: string; billing_month: number; billing_year: number; total_amount_due: number; amount_paid: number; is_fully_paid: boolean }[]
-  generator_status: { name: string; run_status: boolean; last_seen: string | null; is_online: boolean } | null
+  generator_status: { name: string; run_status: boolean; last_seen: string | null; is_online: boolean; gold_hours_today?: number; normal_hours_today?: number } | null
   settings: { primary_color: string; welcome_message: string | null; active_gateway: string; collector_call_enabled: boolean; furatpay_enabled: boolean }
 }
 
@@ -114,6 +114,18 @@ export default function SubscriberHomePage() {
                     <span className="text-xs">{data.generator_status.name}</span>
                     <span className="text-[10px]" style={{ color: '#64748B' }}>{data.generator_status.run_status ? 'تعمل' : 'متوقفة'}</span>
                   </div>
+                  {(data.generator_status.gold_hours_today != null || data.generator_status.normal_hours_today != null) && (
+                    <div className="flex items-center gap-4 mt-2 pt-2" style={{ borderTop: '1px solid #334155' }}>
+                      <div className="flex items-center gap-1.5">
+                        <Clock className="w-3 h-3" style={{ color: '#D97706' }} />
+                        <span className="text-[10px]" style={{ color: '#D97706' }}>{data.generator_status.gold_hours_today ?? 0}h ذهبي</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Clock className="w-3 h-3" style={{ color: '#64748B' }} />
+                        <span className="text-[10px]" style={{ color: '#64748B' }}>{data.generator_status.normal_hours_today ?? 0}h عادي</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -123,6 +135,11 @@ export default function SubscriberHomePage() {
                 <p className="font-num text-3xl font-bold">{fmt(invoiceDue)}<span className="text-sm mr-1 opacity-60">د.ع</span></p>
                 {inv?.is_fully_paid && <p className="text-xs mt-1 opacity-80">✅ مدفوعة</p>}
               </div>
+
+              {/* Upsell for normal subscribers */}
+              {inv?.is_fully_paid && data.subscription_type === 'normal' && (
+                <UpsellCard />
+              )}
 
               {/* Debt */}
               {data.total_debt > 0 && (
@@ -230,6 +247,23 @@ export default function SubscriberHomePage() {
         <InstallBanner />
       </div>
     </>
+  )
+}
+
+function UpsellCard() {
+  const [show, setShow] = useState(true)
+
+  if (!show) return null
+
+  return (
+    <div className="rounded-2xl p-4" style={{ background: 'linear-gradient(135deg, #D97706, #F59E0B)', color: '#FFF' }}>
+      <div className="flex items-start justify-between mb-2">
+        <span className="text-base">⭐</span>
+        <button onClick={() => setShow(false)} className="text-xs opacity-70">✕</button>
+      </div>
+      <p className="text-sm font-bold mb-1">هل تعلم؟</p>
+      <p className="text-xs opacity-90 leading-relaxed">مشتركو الذهبي يحصلون على ساعات أكثر — تحدث مع صاحب المولدة للترقية</p>
+    </div>
   )
 }
 
