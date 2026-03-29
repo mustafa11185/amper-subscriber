@@ -3,7 +3,7 @@
   "short_name": "فاتورتي",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FFFFFF",
+  "background_color": "#F0F4FF",
   "theme_color": "#1B4FD8",
   "dir": "rtl",
   "lang": "ar",

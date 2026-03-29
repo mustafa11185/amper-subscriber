@@ -39,7 +39,7 @@ export default function SubscriberHomePage() {
 
   if (loading || !data) {
     return (
-      <div className="flex items-center justify-center min-h-dvh" style={{ background: '#FFFFFF' }}>
+      <div className="flex items-center justify-center min-h-dvh" style={{ background: 'var(--bg-base)' }}>
         <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#1B4FD8' }} />
       </div>
     )
@@ -95,14 +95,14 @@ export default function SubscriberHomePage() {
   return (
     <>
       <Toaster position="top-center" />
-      <div className="flex-1 pb-20" style={{ background: '#FFFFFF', color: '#0F172A' }}>
+      <div className="flex-1 pb-20" style={{ background: 'var(--bg-base)', color: 'var(--text-primary)' }}>
         {/* Header */}
         <div className="p-4 flex items-center justify-between">
           <div>
             <p className="text-sm font-bold">{data.name}</p>
             <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{data.branch_name}</p>
           </div>
-          <button onClick={logout} className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#F8FAFC' }}>
+          <button onClick={logout} className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
             <LogOut className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
           </button>
         </div>
@@ -112,7 +112,7 @@ export default function SubscriberHomePage() {
             <>
               {/* Generator status */}
               {data.generator_status && (
-                <div className="rounded-2xl p-4" style={{ background: '#F8FAFC' }}>
+                <div className="rounded-2xl p-4" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
                   <div className="flex items-center gap-2 mb-2">
                     <div className="w-2.5 h-2.5 rounded-full" style={{ background: data.generator_status.run_status ? '#22C55E' : '#EF4444' }} />
                     <span className="text-xs">{data.generator_status.name}</span>
@@ -162,7 +162,7 @@ export default function SubscriberHomePage() {
             <div className="space-y-4">
               <h2 className="text-lg font-bold">الدفع</h2>
               {!hasPayment ? (
-                <div className="rounded-2xl p-6 text-center" style={{ background: '#F8FAFC' }}>
+                <div className="rounded-2xl p-6 text-center" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
                   <CreditCard className="w-10 h-10 mx-auto mb-3" style={{ color: 'var(--text-muted)' }} />
                   <p className="text-sm font-bold mb-1">الدفع متاح عند الجابي فقط</p>
                   <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>تواصل مع صاحب المولدة لتفعيل الدفع الإلكتروني</p>
@@ -175,7 +175,7 @@ export default function SubscriberHomePage() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <div className="rounded-2xl p-5 text-center" style={{ background: '#F8FAFC' }}>
+                  <div className="rounded-2xl p-5 text-center" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
                     <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>المبلغ المستحق</p>
                     <p className="font-num text-3xl font-bold">{fmt(invoiceDue + data.total_debt)}<span className="text-sm mr-1" style={{ color: 'var(--text-muted)' }}>د.ع</span></p>
                   </div>
@@ -196,7 +196,7 @@ export default function SubscriberHomePage() {
               {data.invoices_history.length === 0 ? (
                 <p className="text-center text-xs py-8" style={{ color: 'var(--text-muted)' }}>لا توجد فواتير</p>
               ) : data.invoices_history.map(inv => (
-                <div key={inv.id} className="rounded-xl p-3 flex items-center justify-between" style={{ background: '#F8FAFC' }}>
+                <div key={inv.id} className="rounded-xl p-3 flex items-center justify-between" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
                   <div>
                     <p className="text-xs font-bold">شهر {inv.billing_month} — {MONTHS[inv.billing_month]} {inv.billing_year}</p>
                   </div>
@@ -224,7 +224,7 @@ export default function SubscriberHomePage() {
               )}
               <button onClick={logout}
                 className="w-full h-12 rounded-xl text-sm font-medium flex items-center justify-center gap-2"
-                style={{ background: '#1E293B', color: '#EF4444' }}>
+                style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: '#EF4444' }}>
                 <LogOut className="w-4 h-4" /> تسجيل الخروج
               </button>
             </div>
@@ -232,14 +232,14 @@ export default function SubscriberHomePage() {
         </div>
 
         {/* Bottom nav */}
-        <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ background: '#FFFFFF', borderTop: '1px solid #E2E8F0' }}>
+        <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ background: 'var(--bg-surface)', borderTop: '1px solid var(--border)' }}>
           <div className="max-w-[390px] mx-auto flex items-center justify-around h-16 pb-[env(safe-area-inset-bottom)]">
             {tabs.map(t => {
               const isActive = tab === t.key
               const Icon = t.icon
               return (
                 <button key={t.key} onClick={() => setTab(t.key)} className="flex flex-col items-center gap-1 py-2 px-3">
-                  <Icon className="w-5 h-5" style={{ color: isActive ? brandColor : '#64748B' }} />
+                  <Icon className="w-5 h-5" style={{ color: isActive ? brandColor : 'var(--text-muted)' }} />
                   <span className="text-[10px]" style={{ color: isActive ? brandColor : '#64748B', fontWeight: isActive ? 700 : 400 }}>{t.label}</span>
                 </button>
               )
@@ -295,7 +295,7 @@ function InstallBanner() {
 
   return (
     <div className="fixed bottom-20 left-4 right-4 z-40 max-w-[358px] mx-auto">
-      <div className="rounded-2xl p-4" style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', boxShadow: '0 8px 30px rgba(0,0,0,0.1)' }}>
+      <div className="rounded-2xl p-4" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', boxShadow: '0 8px 30px rgba(0,0,0,0.1)' }}>
         <div className="flex items-start justify-between mb-2">
           <p className="text-xs font-bold" style={{ color: '#0F172A' }}>أضف التطبيق لشاشتك الرئيسية</p>
           <button onClick={() => { setShow(false); localStorage.setItem('pwa_dismissed', 'true') }}

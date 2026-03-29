@@ -59,7 +59,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center p-6" style={{ background: '#FFFFFF' }}>
+    <div className="min-h-dvh flex flex-col items-center justify-center p-6" style={{ background: 'var(--bg-base)' }}>
       <div className="w-full max-w-[340px] space-y-8 text-center">
         {/* Logo */}
         <div className="flex items-center justify-center gap-2">
@@ -91,8 +91,8 @@ export default function HomePage() {
           style={{
             height: 56,
             fontSize: 22,
-            background: '#F8FAFC',
-            border: code ? '2px solid #1B4FD8' : '2px solid #E2E8F0',
+            background: 'var(--bg-surface)',
+            border: code ? '2px solid var(--brand-primary)' : '2px solid var(--border)',
             color: '#0F172A',
             caretColor: '#1B4FD8',
           }}
@@ -110,8 +110,8 @@ export default function HomePage() {
           {loading ? 'جاري الدخول...' : 'دخول'}
         </button>
 
-        <p className="text-xs" style={{ color: '#64748B' }}>الكود موجود في رسالة واتساب من مولدتك</p>
-        <p className="text-[10px]" style={{ color: '#94A3B8' }}>مدعوم من أمبير ⚡</p>
+        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>الكود موجود في رسالة واتساب من مولدتك</p>
+        <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>مدعوم من أمبير ⚡</p>
       </div>
     </div>
   )

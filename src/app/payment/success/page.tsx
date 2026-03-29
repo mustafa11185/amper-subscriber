@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 export default function PaymentSuccessPage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center" style={{ background: '#FFFFFF', color: '#0F172A' }}>
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center" style={{ background: 'var(--bg-base)', color: 'var(--text-primary)' }}>
       <div className="w-20 h-20 rounded-full flex items-center justify-center mb-4" style={{ background: 'rgba(5,150,105,0.15)' }}>
         <span className="text-4xl">✅</span>
       </div>
