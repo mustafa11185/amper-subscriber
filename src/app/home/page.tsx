@@ -39,7 +39,7 @@ export default function SubscriberHomePage() {
 
   if (loading || !data) {
     return (
-      <div className="flex items-center justify-center min-h-dvh" style={{ background: '#0D1117' }}>
+      <div className="flex items-center justify-center min-h-dvh" style={{ background: '#FFFFFF' }}>
         <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#1B4FD8' }} />
       </div>
     )
@@ -95,15 +95,15 @@ export default function SubscriberHomePage() {
   return (
     <>
       <Toaster position="top-center" />
-      <div className="flex-1 pb-20" style={{ background: '#0D1117', color: '#E2E8F0' }}>
+      <div className="flex-1 pb-20" style={{ background: '#FFFFFF', color: '#0F172A' }}>
         {/* Header */}
         <div className="p-4 flex items-center justify-between">
           <div>
             <p className="text-sm font-bold">{data.name}</p>
-            <p className="text-[10px]" style={{ color: '#64748B' }}>{data.branch_name}</p>
+            <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{data.branch_name}</p>
           </div>
-          <button onClick={logout} className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#1E293B' }}>
-            <LogOut className="w-4 h-4" style={{ color: '#64748B' }} />
+          <button onClick={logout} className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#F8FAFC' }}>
+            <LogOut className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
           </button>
         </div>
 
@@ -112,21 +112,21 @@ export default function SubscriberHomePage() {
             <>
               {/* Generator status */}
               {data.generator_status && (
-                <div className="rounded-2xl p-4" style={{ background: '#1E293B' }}>
+                <div className="rounded-2xl p-4" style={{ background: '#F8FAFC' }}>
                   <div className="flex items-center gap-2 mb-2">
                     <div className="w-2.5 h-2.5 rounded-full" style={{ background: data.generator_status.run_status ? '#22C55E' : '#EF4444' }} />
                     <span className="text-xs">{data.generator_status.name}</span>
-                    <span className="text-[10px]" style={{ color: '#64748B' }}>{data.generator_status.run_status ? 'تعمل' : 'متوقفة'}</span>
+                    <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{data.generator_status.run_status ? 'تعمل' : 'متوقفة'}</span>
                   </div>
                   {(data.generator_status.gold_hours_today != null || data.generator_status.normal_hours_today != null) && (
-                    <div className="flex items-center gap-4 mt-2 pt-2" style={{ borderTop: '1px solid #334155' }}>
+                    <div className="flex items-center gap-4 mt-2 pt-2" style={{ borderTop: '1px solid #E2E8F0' }}>
                       <div className="flex items-center gap-1.5">
                         <Clock className="w-3 h-3" style={{ color: '#D97706' }} />
                         <span className="text-[10px]" style={{ color: '#D97706' }}>{data.generator_status.gold_hours_today ?? 0}h ذهبي</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <Clock className="w-3 h-3" style={{ color: '#64748B' }} />
-                        <span className="text-[10px]" style={{ color: '#64748B' }}>{data.generator_status.normal_hours_today ?? 0}h عادي</span>
+                        <Clock className="w-3 h-3" style={{ color: 'var(--text-muted)' }} />
+                        <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{data.generator_status.normal_hours_today ?? 0}h عادي</span>
                       </div>
                     </div>
                   )}
@@ -162,10 +162,10 @@ export default function SubscriberHomePage() {
             <div className="space-y-4">
               <h2 className="text-lg font-bold">الدفع</h2>
               {!hasPayment ? (
-                <div className="rounded-2xl p-6 text-center" style={{ background: '#1E293B' }}>
-                  <CreditCard className="w-10 h-10 mx-auto mb-3" style={{ color: '#64748B' }} />
+                <div className="rounded-2xl p-6 text-center" style={{ background: '#F8FAFC' }}>
+                  <CreditCard className="w-10 h-10 mx-auto mb-3" style={{ color: 'var(--text-muted)' }} />
                   <p className="text-sm font-bold mb-1">الدفع متاح عند الجابي فقط</p>
-                  <p className="text-xs mb-4" style={{ color: '#64748B' }}>تواصل مع صاحب المولدة لتفعيل الدفع الإلكتروني</p>
+                  <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>تواصل مع صاحب المولدة لتفعيل الدفع الإلكتروني</p>
                   {data.settings.collector_call_enabled && (
                     <button onClick={handleCallCollector} disabled={callingCollector}
                       className="w-full h-12 rounded-xl text-sm font-bold text-white disabled:opacity-60" style={{ background: brandColor }}>
@@ -175,9 +175,9 @@ export default function SubscriberHomePage() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <div className="rounded-2xl p-5 text-center" style={{ background: '#1E293B' }}>
-                    <p className="text-xs mb-1" style={{ color: '#64748B' }}>المبلغ المستحق</p>
-                    <p className="font-num text-3xl font-bold">{fmt(invoiceDue + data.total_debt)}<span className="text-sm mr-1" style={{ color: '#64748B' }}>د.ع</span></p>
+                  <div className="rounded-2xl p-5 text-center" style={{ background: '#F8FAFC' }}>
+                    <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>المبلغ المستحق</p>
+                    <p className="font-num text-3xl font-bold">{fmt(invoiceDue + data.total_debt)}<span className="text-sm mr-1" style={{ color: 'var(--text-muted)' }}>د.ع</span></p>
                   </div>
                   <button onClick={handlePayCard} disabled={payingCard || (invoiceDue + data.total_debt) <= 0}
                     className="w-full h-14 rounded-2xl text-white text-base font-bold disabled:opacity-50 flex items-center justify-center gap-2"
@@ -194,9 +194,9 @@ export default function SubscriberHomePage() {
             <div className="space-y-3">
               <h2 className="text-lg font-bold">سجل الفواتير</h2>
               {data.invoices_history.length === 0 ? (
-                <p className="text-center text-xs py-8" style={{ color: '#64748B' }}>لا توجد فواتير</p>
+                <p className="text-center text-xs py-8" style={{ color: 'var(--text-muted)' }}>لا توجد فواتير</p>
               ) : data.invoices_history.map(inv => (
-                <div key={inv.id} className="rounded-xl p-3 flex items-center justify-between" style={{ background: '#1E293B' }}>
+                <div key={inv.id} className="rounded-xl p-3 flex items-center justify-between" style={{ background: '#F8FAFC' }}>
                   <div>
                     <p className="text-xs font-bold">شهر {inv.billing_month} — {MONTHS[inv.billing_month]} {inv.billing_year}</p>
                   </div>
@@ -232,7 +232,7 @@ export default function SubscriberHomePage() {
         </div>
 
         {/* Bottom nav */}
-        <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ background: '#0D1117', borderTop: '1px solid #1E293B' }}>
+        <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ background: '#FFFFFF', borderTop: '1px solid #E2E8F0' }}>
           <div className="max-w-[390px] mx-auto flex items-center justify-around h-16 pb-[env(safe-area-inset-bottom)]">
             {tabs.map(t => {
               const isActive = tab === t.key
@@ -295,11 +295,11 @@ function InstallBanner() {
 
   return (
     <div className="fixed bottom-20 left-4 right-4 z-40 max-w-[358px] mx-auto">
-      <div className="rounded-2xl p-4" style={{ background: '#1E293B', border: '1px solid #334155', boxShadow: '0 8px 30px rgba(0,0,0,0.5)' }}>
+      <div className="rounded-2xl p-4" style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', boxShadow: '0 8px 30px rgba(0,0,0,0.1)' }}>
         <div className="flex items-start justify-between mb-2">
-          <p className="text-xs font-bold" style={{ color: '#E2E8F0' }}>أضف التطبيق لشاشتك الرئيسية</p>
+          <p className="text-xs font-bold" style={{ color: '#0F172A' }}>أضف التطبيق لشاشتك الرئيسية</p>
           <button onClick={() => { setShow(false); localStorage.setItem('pwa_dismissed', 'true') }}
-            className="text-xs" style={{ color: '#64748B' }}>✕</button>
+            className="text-xs" style={{ color: 'var(--text-muted)' }}>✕</button>
         </div>
         {isIOS ? (
           <p className="text-[10px] mb-2" style={{ color: '#94A3B8' }}>

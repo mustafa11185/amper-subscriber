@@ -59,15 +59,15 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center p-6" style={{ background: '#0D1117' }}>
+    <div className="min-h-dvh flex flex-col items-center justify-center p-6" style={{ background: '#FFFFFF' }}>
       <div className="w-full max-w-[340px] space-y-8 text-center">
         {/* Logo */}
         <div className="flex items-center justify-center gap-2">
           <Zap className="w-8 h-8" style={{ color: '#1B4FD8' }} />
-          <h1 className="text-2xl font-bold" style={{ color: '#E2E8F0', fontFamily: 'Rajdhani, sans-serif' }}>أمبير</h1>
+          <h1 className="text-2xl font-bold" style={{ color: '#0F172A', fontFamily: 'Rajdhani, sans-serif' }}>أمبير</h1>
         </div>
 
-        <p className="text-base font-bold" style={{ color: '#E2E8F0' }}>ادخل كودك</p>
+        <p className="text-base font-bold" style={{ color: '#0F172A' }}>ادخل كودك</p>
 
         {/* Code input */}
         <input
@@ -88,9 +88,9 @@ export default function HomePage() {
           style={{
             height: 56,
             fontSize: 22,
-            background: '#1E293B',
-            border: code ? '2px solid #1B4FD8' : '2px solid #334155',
-            color: '#E2E8F0',
+            background: '#F8FAFC',
+            border: code ? '2px solid #1B4FD8' : '2px solid #E2E8F0',
+            color: '#0F172A',
             caretColor: '#1B4FD8',
           }}
         />
@@ -107,8 +107,8 @@ export default function HomePage() {
           {loading ? 'جاري الدخول...' : 'دخول'}
         </button>
 
-        <p className="text-xs" style={{ color: '#475569' }}>الكود موجود في رسالة واتساب من مولدتك</p>
-        <p className="text-[10px]" style={{ color: '#334155' }}>مدعوم من أمبير ⚡</p>
+        <p className="text-xs" style={{ color: '#64748B' }}>الكود موجود في رسالة واتساب من مولدتك</p>
+        <p className="text-[10px]" style={{ color: '#94A3B8' }}>مدعوم من أمبير ⚡</p>
       </div>
     </div>
   )

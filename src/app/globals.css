@@ -3,7 +3,7 @@
 :root {
   --brand-primary: #1B4FD8;
   --brand-gradient: linear-gradient(135deg, #1B4FD8, #7C3AED);
-  --bg-base: #F0F4FF;
+  --bg-base: #FFFFFF;
   --bg-surface: #FFFFFF;
   --bg-glass: rgba(255,255,255,0.85);
   --text-primary: #0F172A;
