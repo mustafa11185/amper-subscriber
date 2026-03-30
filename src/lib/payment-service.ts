@@ -1,4 +1,5 @@
 import crypto from 'crypto'
+import { monthName } from './billing-months'
 
 // FuratPay API endpoints — verify with FuratPay team
 // Sandbox: https://sandbox.furatpay.com
@@ -63,7 +64,7 @@ export async function createPayment(settings: PaymentSettings, data: PaymentData
         amount: data.amount,
         currency: 'IQD',
         order_id: orderId,
-        description: `فاتورة شهر ${data.billing_month} - ${data.subscriber_name}`,
+        description: `فاتورة ${monthName(data.billing_month)} - ${data.subscriber_name}`,
         callback_url: data.callback_url,
         return_url: data.return_url,
         customer_name: data.subscriber_name,
@@ -100,7 +101,7 @@ export async function createPayment(settings: PaymentSettings, data: PaymentData
       language: 'ar',
       customer_email: `sub_${data.subscriber_id}@amper.iq`,
       customer_name: data.subscriber_name,
-      order_description: `فاتورة شهر ${data.billing_month} - ${data.subscriber_name}`,
+      order_description: `فاتورة ${monthName(data.billing_month)} - ${data.subscriber_name}`,
       return_url: data.return_url,
     }
 

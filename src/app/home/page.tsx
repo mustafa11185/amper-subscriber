@@ -9,7 +9,7 @@ import {
 import toast, { Toaster } from 'react-hot-toast'
 
 const fmt = (n: number) => Number(n).toLocaleString('en')
-const MONTHS = ['', 'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
+import { formatBillingMonth, monthName } from '@/lib/billing-months'
 
 type SubData = {
   id: string; name: string; serial_number: string; subscription_type: string
@@ -135,7 +135,7 @@ export default function SubscriberHomePage() {
 
               {/* Invoice card */}
               <div className="rounded-2xl p-5 text-center text-white" style={{ background: `linear-gradient(135deg, ${brandColor}, ${brandColor}CC)` }}>
-                <p className="text-xs opacity-80 mb-1">{inv ? `فاتورة شهر ${inv.billing_month} — ${MONTHS[inv.billing_month]}` : 'لا توجد فاتورة'}</p>
+                <p className="text-xs opacity-80 mb-1">{inv ? `فاتورة ${formatBillingMonth(inv.billing_month, inv.billing_year)}` : 'لا توجد فاتورة'}</p>
                 <p className="font-num text-3xl font-bold">{fmt(invoiceDue)}<span className="text-sm mr-1 opacity-60">د.ع</span></p>
                 {inv?.is_fully_paid && <p className="text-xs mt-1 opacity-80">✅ مدفوعة</p>}
               </div>
@@ -198,7 +198,7 @@ export default function SubscriberHomePage() {
               ) : data.invoices_history.map(inv => (
                 <div key={inv.id} className="rounded-xl p-3 flex items-center justify-between" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
                   <div>
-                    <p className="text-xs font-bold">شهر {inv.billing_month} — {MONTHS[inv.billing_month]} {inv.billing_year}</p>
+                    <p className="text-xs font-bold">{formatBillingMonth(inv.billing_month, inv.billing_year)}</p>
                   </div>
                   <div className="text-left">
                     <p className="font-num text-xs font-bold">{fmt(inv.total_amount_due)} د.ع</p>
