@@ -113,6 +113,16 @@ export async function GET(req: NextRequest) {
       furatpay_enabled: (settings as any).furatpay_enabled,
       active_gateway: (branch as any).active_gateway ?? "none",
       collector_call_enabled: (settings as any).collector_call_enabled,
+      show_debt: (settings as any).show_debt ?? true,
+      show_generator: (settings as any).show_generator ?? true,
+      show_invoices: (settings as any).show_invoices ?? true,
+      show_price: (settings as any).show_price ?? false,
+      show_collector: (settings as any).show_collector ?? false,
+      online_payment: (settings as any).online_payment ?? true,
+      partial_payment: (settings as any).partial_payment ?? false,
+      direct_contact: (settings as any).direct_contact ?? false,
+      notifications_enabled: (settings as any).notifications_enabled ?? true,
+      upsell_enabled: (settings as any).upsell_enabled ?? true,
     } : {
       is_active: true,
       primary_color: "#1B4FD8",
@@ -120,6 +130,10 @@ export async function GET(req: NextRequest) {
       furatpay_enabled: false,
       active_gateway: "none",
       collector_call_enabled: true,
+      show_debt: true, show_generator: true, show_invoices: true,
+      show_price: false, show_collector: false, online_payment: true,
+      partial_payment: false, direct_contact: false,
+      notifications_enabled: true, upsell_enabled: true,
     },
   });
   } catch (error: any) {
