@@ -163,7 +163,9 @@ export default function SubscriberHomePage() {
               <h2 className="text-lg font-bold">الدفع</h2>
               {!hasPayment ? (
                 <div className="rounded-2xl p-6 text-center" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
-                  <CreditCard className="w-10 h-10 mx-auto mb-3" style={{ color: 'var(--text-muted)' }} />
+                  <div className="w-16 h-16 mx-auto mb-3 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(100,116,139,0.08)' }}>
+                    <CreditCard className="w-8 h-8" style={{ color: 'var(--text-muted)' }} />
+                  </div>
                   <p className="text-sm font-bold mb-1">الدفع متاح عند الجابي فقط</p>
                   <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>تواصل مع صاحب المولدة لتفعيل الدفع الإلكتروني</p>
                   {data.settings.collector_call_enabled && (
@@ -175,16 +177,58 @@ export default function SubscriberHomePage() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <div className="rounded-2xl p-5 text-center" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
-                    <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>المبلغ المستحق</p>
-                    <p className="font-num text-3xl font-bold">{fmt(invoiceDue + data.total_debt)}<span className="text-sm mr-1" style={{ color: 'var(--text-muted)' }}>د.ع</span></p>
+                  {/* Invoice breakdown */}
+                  <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
+                    <div className="p-5 text-center text-white" style={{ background: `linear-gradient(135deg, ${brandColor}, ${brandColor}DD)` }}>
+                      <p className="text-xs opacity-80 mb-1">المبلغ المستحق</p>
+                      <p className="font-num text-3xl font-bold">{fmt(invoiceDue + data.total_debt)}<span className="text-sm mr-1 opacity-60">د.ع</span></p>
+                    </div>
+                    <div className="px-4 py-3 space-y-2">
+                      {inv && invoiceDue > 0 && (
+                        <div className="flex items-center justify-between">
+                          <span className="font-num text-xs font-bold">{fmt(invoiceDue)} د.ع</span>
+                          <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>فاتورة {formatBillingMonth(inv.billing_month, inv.billing_year)}</span>
+                        </div>
+                      )}
+                      {data.total_debt > 0 && (
+                        <div className="flex items-center justify-between">
+                          <span className="font-num text-xs font-bold" style={{ color: '#EF4444' }}>{fmt(data.total_debt)} د.ع</span>
+                          <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>ديون سابقة</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
+
+                  {/* Pay button with Mastercard logo */}
                   <button onClick={handlePayCard} disabled={payingCard || (invoiceDue + data.total_debt) <= 0}
-                    className="w-full h-14 rounded-2xl text-white text-base font-bold disabled:opacity-50 flex items-center justify-center gap-2"
-                    style={{ background: '#2B3990', boxShadow: '0 4px 20px rgba(43,57,144,0.3)' }}>
-                    {payingCard ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
-                    {payingCard ? 'جاري التحويل...' : '💳 ادفع بالماستركارد'}
+                    className="w-full rounded-2xl text-white font-bold disabled:opacity-50 flex items-center justify-center gap-3 relative overflow-hidden"
+                    style={{ background: 'linear-gradient(135deg, #1A1F71, #2B3990)', height: 60, boxShadow: '0 4px 24px rgba(26,31,113,0.35)' }}>
+                    {payingCard ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <svg width="32" height="20" viewBox="0 0 32 20">
+                        <circle cx="12" cy="10" r="9" fill="#EB001B" opacity="0.9" />
+                        <circle cx="20" cy="10" r="9" fill="#F79E1B" opacity="0.9" />
+                        <path d="M16 3.3a9 9 0 0 1 0 13.4 9 9 0 0 1 0-13.4z" fill="#FF5F00" />
+                      </svg>
+                    )}
+                    <span className="text-base">{payingCard ? 'جاري التحويل...' : 'ادفع الآن'}</span>
                   </button>
+
+                  {/* Security note */}
+                  <div className="flex items-center justify-center gap-2 py-1">
+                    <svg width="12" height="14" viewBox="0 0 12 14" fill="none"><path d="M10 5H9V3.5C9 1.57 7.43 0 5.5 0S2 1.57 2 3.5V5H1C.45 5 0 5.45 0 6v7c0 .55.45 1 1 1h9c.55 0 1-.45 1-1V6c0-.55-.45-1-1-1zM5.5 10.5c-.83 0-1.5-.67-1.5-1.5S4.67 7.5 5.5 7.5 7 8.17 7 9s-.67 1.5-1.5 1.5zM7.5 5h-4V3.5C3.5 2.4 4.4 1.5 5.5 1.5S7.5 2.4 7.5 3.5V5z" fill="#94A3B8"/></svg>
+                    <span className="text-[10px]" style={{ color: '#94A3B8' }}>دفع آمن ومشفّر بالكامل</span>
+                  </div>
+
+                  {/* Also call collector */}
+                  {data.settings.collector_call_enabled && (
+                    <button onClick={handleCallCollector} disabled={callingCollector}
+                      className="w-full h-11 rounded-xl text-xs font-medium flex items-center justify-center gap-2 disabled:opacity-60"
+                      style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
+                      {callingCollector ? 'جاري...' : '📞 أو أرسل الجابي للدفع نقداً'}
+                    </button>
+                  )}
                 </div>
               )}
             </div>
