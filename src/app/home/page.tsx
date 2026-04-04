@@ -39,6 +39,7 @@ export default function SubscriberHomePage() {
   const [payLoading, setPayLoading] = useState(false)
   const [zainData, setZainData] = useState<{ merchant_phone: string | null; amount: number } | null>(null)
   const [announcements, setAnnouncements] = useState<any[]>([])
+  const [unreadCount, setUnreadCount] = useState(0)
 
   useEffect(() => {
     fetch('/api/subscriber/me')
@@ -46,7 +47,23 @@ export default function SubscriberHomePage() {
       .then(d => { setData(d); setLoading(false) })
       .catch(() => { router.replace('/'); })
     fetch('/api/announcements').then(r => r.json()).then(d => setAnnouncements(d.announcements ?? [])).catch(() => {})
+    fetch('/api/announcements/unread-count').then(r => r.json()).then(d => setUnreadCount(d.count ?? 0)).catch(() => {})
   }, [router])
+
+  const onTabClick = (key: Tab) => {
+    setTab(key)
+    if (key === 'alerts' && unreadCount > 0) {
+      setUnreadCount(0)
+      const ids = announcements.map((a: any) => a.id)
+      if (ids.length) {
+        fetch('/api/announcements/mark-read', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ announcement_ids: ids }),
+        }).catch(() => {})
+      }
+    }
+  }
 
   if (loading || !data) {
     return (
@@ -511,8 +528,15 @@ export default function SubscriberHomePage() {
               const isActive = tab === t.key
               const Icon = t.icon
               return (
-                <button key={t.key} onClick={() => setTab(t.key)} className="flex flex-col items-center gap-1 py-2 px-3">
-                  <Icon className="w-5 h-5" style={{ color: isActive ? brandColor : 'var(--text-muted)' }} />
+                <button key={t.key} onClick={() => onTabClick(t.key)} className="flex flex-col items-center gap-1 py-2 px-3">
+                  <span className="relative inline-block">
+                    <Icon className="w-5 h-5" style={{ color: isActive ? brandColor : 'var(--text-muted)' }} />
+                    {t.key === 'alerts' && unreadCount > 0 && (
+                      <span className="absolute -top-1.5 -right-2 flex items-center justify-center rounded-full text-white font-bold" style={{ background: '#C62828', minWidth: '16px', height: '16px', fontSize: '9px', padding: '0 4px' }}>
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </span>
+                    )}
+                  </span>
                   <span className="text-[10px]" style={{ color: isActive ? brandColor : '#64748B', fontWeight: isActive ? 700 : 400 }}>{t.label}</span>
                 </button>
               )
