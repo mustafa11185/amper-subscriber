@@ -37,6 +37,7 @@ export default function SubscriberHomePage() {
   const [cardCvv, setCardCvv] = useState('')
   const [cardName, setCardName] = useState('')
   const [payLoading, setPayLoading] = useState(false)
+  const [zainData, setZainData] = useState<{ merchant_phone: string | null; amount: number } | null>(null)
 
   useEffect(() => {
     fetch('/api/subscriber/me')
@@ -94,6 +95,31 @@ export default function SubscriberHomePage() {
       toast.error('خطأ في الاتصال')
       setPayLoading(false)
     }
+  }
+
+  async function handleZainPay() {
+    setPayLoading(true)
+    try {
+      const res = await fetch('/api/payment/init', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          invoice_id: data?.current_invoice?.id,
+          amount: totalDue,
+          payment_method: 'zaincash',
+        }),
+      })
+      const result = await res.json()
+      if (result.zaincash) {
+        setZainData({ merchant_phone: result.merchant_phone, amount: result.amount })
+        setShowZainSheet(true)
+      } else {
+        toast.error(result.error || 'فشل')
+      }
+    } catch {
+      toast.error('خطأ في الاتصال')
+    }
+    setPayLoading(false)
   }
 
   function logout() {
@@ -277,7 +303,7 @@ export default function SubscriberHomePage() {
                   </button>
 
                   {/* ZainCash */}
-                  <button onClick={() => { setPayMethod('zaincash'); setShowZainSheet(true) }}
+                  <button onClick={() => { setPayMethod('zaincash'); handleZainPay() }}
                     className="w-full rounded-2xl p-3 flex items-center justify-between"
                     style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
                     <span style={{ color: 'var(--text-muted)' }}>&#x203A;</span>
@@ -427,6 +453,14 @@ export default function SubscriberHomePage() {
                   </div>
                 ))}
               </div>
+              {zainData?.merchant_phone && (
+                <div className="rounded-2xl p-3 text-center" style={{ background: '#F8FAFC', border: '1px solid var(--border)' }}>
+                  <p className="text-[11px] mb-1" style={{ color: 'var(--text-muted)' }}>رقم محفظة ZainCash</p>
+                  <p className="font-bold text-lg tracking-widest" style={{ color: '#009944' }}>{zainData.merchant_phone}</p>
+                  <button onClick={() => { navigator.clipboard.writeText(zainData.merchant_phone!); toast.success('تم نسخ الرقم') }}
+                    className="text-[11px] mt-1" style={{ color: '#1B4FD8' }}>📋 نسخ الرقم</button>
+                </div>
+              )}
             </div>
           </div>
         )}

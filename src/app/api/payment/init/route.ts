@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     const subscriberId = cookieStore.get("subscriber_id")?.value;
     if (!subscriberId) return NextResponse.json({ error: "غير مسجل" }, { status: 401 });
 
-    const { invoice_id, amount } = await req.json();
+    const { invoice_id, amount, payment_method } = await req.json();
     if (!amount || amount <= 0) {
       return NextResponse.json({ error: "بيانات غير صالحة" }, { status: 400 });
     }
@@ -21,6 +21,31 @@ export async function POST(req: NextRequest) {
     if (!subscriber) return NextResponse.json({ error: "مشترك غير موجود" }, { status: 404 });
 
     const branch = subscriber.branch;
+
+    // ZainCash — no real gateway, return merchant info for manual payment
+    if (payment_method === 'zaincash') {
+      await prisma.onlinePayment.create({
+        data: {
+          subscriber_id: subscriber.id,
+          tenant_id: subscriber.tenant_id,
+          invoice_id: invoice_id || null,
+          amount,
+          gateway: 'zaincash',
+          gateway_ref: `ZAIN-${subscriber.id}-${Date.now()}`,
+          status: 'pending',
+        },
+      });
+
+      return NextResponse.json({
+        payment_url: null,
+        zaincash: true,
+        merchant_phone: (branch as any).zaincash_phone ?? null,
+        amount,
+        expires_in: 900,
+      });
+    }
+
+    // Card payments (qi_card, visa) — use configured gateway
     if (!branch.is_online_payment_enabled || branch.active_gateway === "none") {
       return NextResponse.json({ error: "الدفع الإلكتروني غير مفعّل" }, { status: 400 });
     }
