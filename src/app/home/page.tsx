@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Zap, CreditCard, Phone, AlertTriangle, CheckCircle2,
-  Clock, Loader2, FileText, PhoneCall, LogOut,
+  Clock, Loader2, FileText, PhoneCall, LogOut, Bell,
 } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
 
@@ -20,7 +20,7 @@ type SubData = {
   settings: { primary_color: string; welcome_message: string | null; active_gateway: string; collector_call_enabled: boolean; furatpay_enabled: boolean }
 }
 
-type Tab = 'home' | 'pay' | 'history' | 'contact'
+type Tab = 'home' | 'pay' | 'history' | 'alerts' | 'contact'
 
 export default function SubscriberHomePage() {
   const router = useRouter()
@@ -38,12 +38,14 @@ export default function SubscriberHomePage() {
   const [cardName, setCardName] = useState('')
   const [payLoading, setPayLoading] = useState(false)
   const [zainData, setZainData] = useState<{ merchant_phone: string | null; amount: number } | null>(null)
+  const [announcements, setAnnouncements] = useState<any[]>([])
 
   useEffect(() => {
     fetch('/api/subscriber/me')
       .then(r => { if (!r.ok) throw new Error(); return r.json() })
       .then(d => { setData(d); setLoading(false) })
       .catch(() => { router.replace('/'); })
+    fetch('/api/announcements').then(r => r.json()).then(d => setAnnouncements(d.announcements ?? [])).catch(() => {})
   }, [router])
 
   if (loading || !data) {
@@ -161,6 +163,7 @@ export default function SubscriberHomePage() {
     { key: 'home', icon: Zap, label: 'الرئيسية' },
     { key: 'pay', icon: CreditCard, label: 'الدفع' },
     { key: 'history', icon: FileText, label: 'الفواتير' },
+    { key: 'alerts', icon: Bell, label: 'إشعارات' },
     { key: 'contact', icon: Phone, label: 'تواصل' },
   ]
 
@@ -342,6 +345,42 @@ export default function SubscriberHomePage() {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+
+          {tab === 'alerts' && (
+            <div className="space-y-3">
+              <h2 className="text-lg font-bold">الإشعارات</h2>
+              {announcements.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 gap-3">
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center text-3xl" style={{ background: '#F1F5F9' }}>📭</div>
+                  <p className="text-sm" style={{ color: 'var(--text-muted)' }}>لا توجد إشعارات</p>
+                </div>
+              ) : announcements.map((a: any) => {
+                const cfg: Record<string, { emoji: string; label: string; bg: string; color: string }> = {
+                  maintenance: { emoji: '🔧', label: 'صيانة', bg: '#FFF3E0', color: '#E65100' },
+                  emergency: { emoji: '⚡', label: 'طارئ', bg: '#FFEBEE', color: '#C62828' },
+                  price: { emoji: '💰', label: 'تسعيرة', bg: '#E8F5E9', color: '#2E7D32' },
+                  general: { emoji: '📢', label: 'إعلان', bg: '#E3F2FD', color: '#1565C0' },
+                }
+                const c = cfg[a.type] ?? cfg.general
+                const dt = new Date(a.created_at)
+                const diff = Date.now() - dt.getTime()
+                const mins = Math.floor(diff / 60000)
+                const timeAgo = mins < 60 ? `منذ ${mins} دقيقة` : mins < 1440 ? `منذ ${Math.floor(mins / 60)} ساعة` : `منذ ${Math.floor(mins / 1440)} يوم`
+                return (
+                  <div key={a.id} className="rounded-2xl overflow-hidden" style={{ background: 'var(--bg-surface)', border: `1px solid ${c.bg}`, boxShadow: 'var(--shadow-card)' }}>
+                    {a.is_urgent && <div className="text-white text-xs font-bold text-center py-1.5" style={{ background: '#EF4444' }}>🚨 إشعار عاجل</div>}
+                    <div className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[11px]" style={{ color: c.color }}>{timeAgo}</span>
+                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-full" style={{ background: c.bg, color: c.color }}>{c.emoji} {c.label}</span>
+                      </div>
+                      <p className="text-sm leading-relaxed text-right" style={{ color: 'var(--text-secondary)' }}>{a.message}</p>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           )}
 
