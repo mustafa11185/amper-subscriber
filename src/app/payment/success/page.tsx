@@ -1,20 +1,60 @@
 'use client'
+import { useEffect, useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-import Link from 'next/link'
+function SuccessContent() {
+  const router = useRouter()
+  const params = useSearchParams()
+  const ref = params.get('ref') ?? ''
+  const [countdown, setCountdown] = useState(5)
 
-export default function PaymentSuccessPage() {
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown(c => {
+        if (c <= 1) { clearInterval(timer); router.push('/home'); return 0 }
+        return c - 1
+      })
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [router])
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center" style={{ background: 'var(--bg-base)', color: 'var(--text-primary)' }}>
-      <div className="w-20 h-20 rounded-full flex items-center justify-center mb-4" style={{ background: 'rgba(5,150,105,0.15)' }}>
-        <span className="text-4xl">✅</span>
+    <div dir="rtl" style={{
+      minHeight: '100dvh',
+      background: 'linear-gradient(135deg, #1B4FD8, #7C3AED)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
+    }}>
+      <div style={{
+        background: 'white', borderRadius: 20, padding: '32px 24px',
+        textAlign: 'center', maxWidth: 360, width: '100%',
+      }}>
+        <div style={{
+          width: 72, height: 72, borderRadius: '50%',
+          background: 'linear-gradient(135deg, #059669, #10B981)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          margin: '0 auto 16px', color: 'white', fontSize: 32, fontWeight: 700,
+        }}>✓</div>
+        <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', marginBottom: 8 }}>تم الدفع بنجاح!</h2>
+        <p style={{ fontSize: 13, color: '#94A3B8', marginBottom: 24 }}>تم تسجيل دفعتك بنجاح</p>
+        {ref && (
+          <div style={{ background: '#F0F4FF', borderRadius: 10, padding: 10, marginBottom: 20 }}>
+            <p style={{ fontSize: 10, color: '#94A3B8', marginBottom: 3 }}>رقم المعاملة</p>
+            <p style={{ fontSize: 12, fontWeight: 600, color: '#1A237E' }}>{ref}</p>
+          </div>
+        )}
+        <div style={{ background: '#F0FDF4', borderRadius: 10, padding: 12, marginBottom: 16 }}>
+          <p style={{ fontSize: 12, color: '#059669' }}>🔄 العودة خلال {countdown} ثوانٍ...</p>
+        </div>
+        <button onClick={() => router.push('/home')} style={{
+          width: '100%', padding: 14, borderRadius: 12,
+          background: 'linear-gradient(135deg, #1B4FD8, #7C3AED)',
+          color: 'white', border: 'none', fontSize: 14, fontWeight: 700, cursor: 'pointer',
+        }}>العودة الآن</button>
       </div>
-      <h1 className="text-xl font-bold mb-2">تم الدفع بنجاح</h1>
-      <p className="text-sm mb-6" style={{ color: '#94A3B8' }}>شكراً لك — تم تسجيل الدفعة الإلكترونية</p>
-      <Link href="/home"
-        className="h-11 px-6 rounded-xl text-white text-sm font-bold flex items-center justify-center"
-        style={{ background: '#1B4FD8' }}>
-        العودة لصفحتك
-      </Link>
     </div>
   )
+}
+
+export default function PaymentSuccessPage() {
+  return <Suspense><SuccessContent /></Suspense>
 }
