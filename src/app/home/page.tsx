@@ -29,6 +29,14 @@ export default function SubscriberHomePage() {
   const [tab, setTab] = useState<Tab>('home')
   const [callingCollector, setCallingCollector] = useState(false)
   const [payingCard, setPayingCard] = useState(false)
+  const [payMethod, setPayMethod] = useState<'qi_card'|'visa'|'zaincash'|null>(null)
+  const [showCardSheet, setShowCardSheet] = useState(false)
+  const [showZainSheet, setShowZainSheet] = useState(false)
+  const [cardNum, setCardNum] = useState('')
+  const [cardExpiry, setCardExpiry] = useState('')
+  const [cardCvv, setCardCvv] = useState('')
+  const [cardName, setCardName] = useState('')
+  const [payLoading, setPayLoading] = useState(false)
 
   useEffect(() => {
     fetch('/api/subscriber/me')
@@ -49,6 +57,44 @@ export default function SubscriberHomePage() {
   const inv = data.current_invoice
   const invoiceDue = inv ? inv.total_amount_due - inv.amount_paid : 0
   const hasPayment = data.settings.furatpay_enabled || data.settings.active_gateway === 'aps'
+
+  const formatCardNum = (v: string) => {
+    const digits = v.replace(/\D/g, '').slice(0, 16)
+    return digits.replace(/(.{4})/g, '$1 ').trim()
+  }
+  const formatExpiry = (v: string) => {
+    const digits = v.replace(/\D/g, '').slice(0, 4)
+    if (digits.length >= 2) return digits.slice(0, 2) + '/' + digits.slice(2)
+    return digits
+  }
+  const invMonthName = inv ? formatBillingMonth(inv.billing_month, inv.billing_year) : ''
+  const totalDue = invoiceDue + (data?.total_debt ?? 0)
+
+  async function handleCardPay() {
+    if (!cardNum || !cardExpiry || !cardCvv) return
+    setPayLoading(true)
+    try {
+      const res = await fetch('/api/payment/init', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          invoice_id: data?.current_invoice?.id,
+          amount: totalDue,
+          payment_method: payMethod,
+        }),
+      })
+      const result = await res.json()
+      if (result.payment_url) {
+        window.location.href = result.payment_url
+      } else {
+        toast.error(result.error || 'فشل إنشاء رابط الدفع')
+        setPayLoading(false)
+      }
+    } catch {
+      toast.error('خطأ في الاتصال')
+      setPayLoading(false)
+    }
+  }
 
   function logout() {
     document.cookie = 'subscriber_id=; path=/; max-age=0'
@@ -177,58 +223,76 @@ export default function SubscriberHomePage() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {/* Invoice breakdown */}
-                  <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
-                    <div className="p-5 text-center text-white" style={{ background: `linear-gradient(135deg, ${brandColor}, ${brandColor}DD)` }}>
+                  {/* Amount card */}
+                  <div className="rounded-2xl overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
+                    <div className="p-4 text-center text-white" style={{ background: `linear-gradient(135deg, ${brandColor}, ${brandColor}DD)` }}>
                       <p className="text-xs opacity-80 mb-1">المبلغ المستحق</p>
-                      <p className="font-num text-3xl font-bold">{fmt(invoiceDue + data.total_debt)}<span className="text-sm mr-1 opacity-60">د.ع</span></p>
+                      <p className="font-num text-3xl font-bold">{fmt(totalDue)}<span className="text-sm mr-1 opacity-60">د.ع</span></p>
                     </div>
-                    <div className="px-4 py-3 space-y-2">
-                      {inv && invoiceDue > 0 && (
-                        <div className="flex items-center justify-between">
-                          <span className="font-num text-xs font-bold">{fmt(invoiceDue)} د.ع</span>
-                          <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>فاتورة {formatBillingMonth(inv.billing_month, inv.billing_year)}</span>
-                        </div>
-                      )}
-                      {data.total_debt > 0 && (
-                        <div className="flex items-center justify-between">
-                          <span className="font-num text-xs font-bold" style={{ color: '#EF4444' }}>{fmt(data.total_debt)} د.ع</span>
-                          <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>ديون سابقة</span>
-                        </div>
-                      )}
+                    <div className="flex" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', background: `linear-gradient(135deg, ${brandColor}EE, ${brandColor}CC)` }}>
+                      <div className="flex-1 p-3 text-center" style={{ borderLeft: '1px solid rgba(255,255,255,0.1)' }}>
+                        <p className="text-white/50 text-[10px] mb-0.5">فاتورة {invMonthName}</p>
+                        <p className="text-white font-bold font-num text-sm">{fmt(invoiceDue)}</p>
+                      </div>
+                      <div className="flex-1 p-3 text-center">
+                        <p className="text-white/50 text-[10px] mb-0.5">ديون سابقة</p>
+                        <p className={`font-bold font-num text-sm ${data.total_debt > 0 ? 'text-red-300' : 'text-white'}`}>{fmt(data.total_debt)}</p>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Pay button with Mastercard logo */}
-                  <button onClick={handlePayCard} disabled={payingCard || (invoiceDue + data.total_debt) <= 0}
-                    className="w-full rounded-2xl text-white font-bold disabled:opacity-50 flex items-center justify-center gap-3 relative overflow-hidden"
-                    style={{ background: 'linear-gradient(135deg, #1A1F71, #2B3990)', height: 60, boxShadow: '0 4px 24px rgba(26,31,113,0.35)' }}>
-                    {payingCard ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <svg width="32" height="20" viewBox="0 0 32 20">
-                        <circle cx="12" cy="10" r="9" fill="#EB001B" opacity="0.9" />
-                        <circle cx="20" cy="10" r="9" fill="#F79E1B" opacity="0.9" />
-                        <path d="M16 3.3a9 9 0 0 1 0 13.4 9 9 0 0 1 0-13.4z" fill="#FF5F00" />
-                      </svg>
-                    )}
-                    <span className="text-base">{payingCard ? 'جاري التحويل...' : 'ادفع الآن'}</span>
+                  <p className="text-[11px] text-right" style={{ color: 'var(--text-muted)' }}>اختر طريقة الدفع</p>
+
+                  {/* Qi Card / Mastercard */}
+                  <button onClick={() => { setPayMethod('qi_card'); setShowCardSheet(true) }}
+                    className="w-full rounded-2xl p-3 flex items-center justify-between"
+                    style={{ background: 'var(--bg-surface)', border: '2px solid #1B4FD8', boxShadow: '0 2px 8px rgba(27,79,216,0.12)' }}>
+                    <span style={{ color: '#1B4FD8' }}>&#x203A;</span>
+                    <div className="flex items-center gap-2">
+                      <div className="text-right">
+                        <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>كي كارد / ماستركارد</p>
+                        <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>بطاقة كي العراقية أو ماستركارد</p>
+                      </div>
+                      <div className="flex flex-col items-center gap-1">
+                        <span className="text-white text-[10px] font-black px-1.5 py-0.5 rounded" style={{ background: '#009944' }}>QI</span>
+                        <svg width="24" height="16" viewBox="0 0 32 20"><circle cx="12" cy="10" r="9" fill="#EB001B" /><circle cx="20" cy="10" r="9" fill="#F79E1B" /><path d="M16 3.3a9 9 0 0 1 0 13.4 9 9 0 0 1 0-13.4z" fill="#FF5F00" /></svg>
+                      </div>
+                    </div>
                   </button>
 
-                  {/* Security note */}
-                  <div className="flex items-center justify-center gap-2 py-1">
-                    <svg width="12" height="14" viewBox="0 0 12 14" fill="none"><path d="M10 5H9V3.5C9 1.57 7.43 0 5.5 0S2 1.57 2 3.5V5H1C.45 5 0 5.45 0 6v7c0 .55.45 1 1 1h9c.55 0 1-.45 1-1V6c0-.55-.45-1-1-1zM5.5 10.5c-.83 0-1.5-.67-1.5-1.5S4.67 7.5 5.5 7.5 7 8.17 7 9s-.67 1.5-1.5 1.5zM7.5 5h-4V3.5C3.5 2.4 4.4 1.5 5.5 1.5S7.5 2.4 7.5 3.5V5z" fill="#94A3B8"/></svg>
-                    <span className="text-[10px]" style={{ color: '#94A3B8' }}>دفع آمن ومشفّر بالكامل</span>
-                  </div>
+                  {/* Visa */}
+                  <button onClick={() => { setPayMethod('visa'); setShowCardSheet(true) }}
+                    className="w-full rounded-2xl p-3 flex items-center justify-between"
+                    style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>&#x203A;</span>
+                    <div className="flex items-center gap-2">
+                      <div className="text-right">
+                        <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>فيزا كارد</p>
+                        <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>بطاقة فيزا بنكية</p>
+                      </div>
+                      <div className="rounded px-2 py-1" style={{ background: '#1A1F71' }}>
+                        <span className="text-white text-sm font-black italic">VISA</span>
+                      </div>
+                    </div>
+                  </button>
 
-                  {/* Also call collector */}
-                  {data.settings.collector_call_enabled && (
-                    <button onClick={handleCallCollector} disabled={callingCollector}
-                      className="w-full h-11 rounded-xl text-xs font-medium flex items-center justify-center gap-2 disabled:opacity-60"
-                      style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
-                      {callingCollector ? 'جاري...' : '📞 أو أرسل الجابي للدفع نقداً'}
-                    </button>
-                  )}
+                  {/* ZainCash */}
+                  <button onClick={() => { setPayMethod('zaincash'); setShowZainSheet(true) }}
+                    className="w-full rounded-2xl p-3 flex items-center justify-between"
+                    style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>&#x203A;</span>
+                    <div className="flex items-center gap-2">
+                      <div className="text-right">
+                        <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>ZainCash</p>
+                        <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>محفظة زين النقدية</p>
+                      </div>
+                      <div className="rounded px-2 py-1" style={{ background: '#009944' }}>
+                        <span className="text-white text-sm font-black">Z</span>
+                      </div>
+                    </div>
+                  </button>
+
+                  <p className="text-center text-[10px]" style={{ color: '#94A3B8' }}>🔒 دفع آمن ومشفّر</p>
                 </div>
               )}
             </div>
@@ -274,6 +338,98 @@ export default function SubscriberHomePage() {
             </div>
           )}
         </div>
+
+        {/* Card payment bottom sheet */}
+        {showCardSheet && (
+          <div className="fixed inset-0 z-50 flex items-end" style={{ background: 'rgba(15,23,42,0.5)' }}>
+            <div className="w-full bg-white rounded-t-2xl p-5 pb-8 max-w-[390px] mx-auto">
+              <div className="w-9 h-1 rounded mx-auto mb-4" style={{ background: '#E2E8F0' }} />
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-1">
+                  {payMethod === 'qi_card' ? (<>
+                    <span className="text-white text-[10px] font-black px-1.5 py-0.5 rounded" style={{ background: '#009944' }}>QI</span>
+                    <svg width="24" height="16" viewBox="0 0 32 20"><circle cx="12" cy="10" r="9" fill="#EB001B" /><circle cx="20" cy="10" r="9" fill="#F79E1B" /><path d="M16 3.3a9 9 0 0 1 0 13.4 9 9 0 0 1 0-13.4z" fill="#FF5F00" /></svg>
+                  </>) : (
+                    <div className="rounded px-2 py-1" style={{ background: '#1A1F71' }}><span className="text-white text-sm font-black italic">VISA</span></div>
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-right" style={{ color: 'var(--text-primary)' }}>
+                    {payMethod === 'qi_card' ? 'كي كارد / ماستركارد' : 'فيزا كارد'}
+                  </p>
+                  <p className="text-lg font-bold font-num text-right" style={{ color: brandColor }}>{fmt(totalDue)} د.ع</p>
+                </div>
+              </div>
+              <label className="text-[11px] block text-right mb-1" style={{ color: 'var(--text-muted)' }}>رقم البطاقة</label>
+              <input type="tel" inputMode="numeric" maxLength={19} value={cardNum}
+                onChange={e => setCardNum(formatCardNum(e.target.value))}
+                placeholder="0000 0000 0000 0000" dir="ltr"
+                className="w-full rounded-xl px-3 py-3 text-center text-sm tracking-widest mb-3 outline-none"
+                style={{ background: '#F8FAFC', border: '1px solid var(--border)' }} />
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                  <label className="text-[11px] block text-right mb-1" style={{ color: 'var(--text-muted)' }}>تاريخ الانتهاء</label>
+                  <input type="tel" inputMode="numeric" maxLength={5} value={cardExpiry}
+                    onChange={e => setCardExpiry(formatExpiry(e.target.value))}
+                    placeholder="MM/YY" dir="ltr"
+                    className="w-full rounded-xl px-3 py-3 text-center text-sm outline-none"
+                    style={{ background: '#F8FAFC', border: '1px solid var(--border)' }} />
+                </div>
+                <div>
+                  <label className="text-[11px] block text-right mb-1" style={{ color: 'var(--text-muted)' }}>رمز CVV</label>
+                  <input type="tel" inputMode="numeric" maxLength={3} value={cardCvv}
+                    onChange={e => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 3))}
+                    placeholder="•••" dir="ltr"
+                    className="w-full rounded-xl px-3 py-3 text-center text-sm outline-none"
+                    style={{ background: '#F8FAFC', border: '1px solid var(--border)' }} />
+                </div>
+              </div>
+              <label className="text-[11px] block text-right mb-1" style={{ color: 'var(--text-muted)' }}>اسم حامل البطاقة</label>
+              <input type="text" value={cardName} onChange={e => setCardName(e.target.value)}
+                placeholder="الاسم كما هو على البطاقة"
+                className="w-full rounded-xl px-3 py-3 text-right text-sm mb-4 outline-none"
+                style={{ background: '#F8FAFC', border: '1px solid var(--border)' }} />
+              <button onClick={handleCardPay} disabled={payLoading || !cardNum || !cardExpiry || !cardCvv}
+                className="w-full py-4 rounded-2xl text-white font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                style={{ background: payLoading ? '#94A3B8' : `linear-gradient(135deg, ${brandColor}, #7C3AED)` }}>
+                {payLoading ? '⏳ جارٍ الدفع...' : `ادفع الآن ${fmt(totalDue)} د.ع`}
+              </button>
+              <p className="text-center text-[10px] mt-2" style={{ color: '#94A3B8' }}>🔒 مشفّر بـ SSL 256-bit</p>
+              <button onClick={() => { setShowCardSheet(false); setCardNum(''); setCardExpiry(''); setCardCvv(''); setCardName('') }}
+                className="w-full mt-2 py-3 text-sm" style={{ color: 'var(--text-muted)' }}>إلغاء</button>
+            </div>
+          </div>
+        )}
+
+        {/* ZainCash bottom sheet */}
+        {showZainSheet && (
+          <div className="fixed inset-0 z-50 flex items-end" style={{ background: 'rgba(15,23,42,0.5)' }}>
+            <div className="w-full bg-white rounded-t-2xl p-5 pb-8 max-w-[390px] mx-auto">
+              <div className="w-9 h-1 rounded mx-auto mb-4" style={{ background: '#E2E8F0' }} />
+              <div className="flex items-center justify-between mb-4">
+                <button onClick={() => setShowZainSheet(false)} style={{ color: 'var(--text-muted)' }}>✕</button>
+                <div className="text-right">
+                  <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>ZainCash</p>
+                  <p className="text-lg font-bold font-num" style={{ color: '#009944' }}>{fmt(totalDue)} د.ع</p>
+                </div>
+              </div>
+              <div className="rounded-2xl p-4 text-center mb-4" style={{ background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
+                <div className="w-20 h-20 bg-white rounded-xl mx-auto mb-2 flex items-center justify-center text-4xl" style={{ border: '2px solid #4ADE80' }}>▦</div>
+                <p className="font-bold text-sm" style={{ color: '#15803D' }}>امسح الباركود بتطبيق ZainCash</p>
+                <p className="text-[11px] mt-1" style={{ color: '#4ADE80' }}>صالح لمدة 15 دقيقة</p>
+              </div>
+              <p className="text-[11px] text-center mb-3" style={{ color: 'var(--text-muted)' }}>أو اتبع هذه الخطوات</p>
+              <div className="rounded-2xl mb-4" style={{ border: '1px solid var(--border)' }}>
+                {['افتح تطبيق ZainCash أو SuperQi', 'اختر "دفع فاتورة" أو "Scan to Pay"', 'امسح الباركود أعلاه', 'أدخل رقمك السري وأكد الدفع'].map((step, i) => (
+                  <div key={i} className="flex items-center gap-3 p-3" style={{ borderBottom: i < 3 ? '1px solid var(--border)' : 'none' }}>
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0" style={{ background: '#009944' }}>{i + 1}</div>
+                    <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{step}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Bottom nav */}
         <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ background: 'var(--bg-surface)', borderTop: '1px solid var(--border)' }}>
