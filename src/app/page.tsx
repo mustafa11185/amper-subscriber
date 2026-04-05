@@ -14,7 +14,21 @@ export default function HomePage() {
   // Check if already logged in
   useEffect(() => {
     const sid = document.cookie.split(';').find(c => c.trim().startsWith('subscriber_id='))
-    if (sid) router.replace('/home')
+    if (sid) { router.replace('/home'); return }
+    // Auto-login via ?code= query param (from printed QR)
+    const params = new URLSearchParams(window.location.search)
+    const qrCode = params.get('code')
+    if (!qrCode) return
+    const cleaned = qrCode.toUpperCase().trim().replace(/\s+/g, '').replace(/[^A-Z0-9-]/g, '')
+    if (cleaned.length < 10) return
+    fetch('/api/lookup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: cleaned }),
+    })
+      .then(r => r.json())
+      .then(data => { if (data.ok) router.replace('/home') })
+      .catch(() => {})
   }, [router])
 
   function cleanCode(raw: string): string {
