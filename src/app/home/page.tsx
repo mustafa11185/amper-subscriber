@@ -42,12 +42,37 @@ export default function SubscriberHomePage() {
   const [unreadCount, setUnreadCount] = useState(0)
 
   useEffect(() => {
-    fetch('/api/subscriber/me')
+    const fetchMe = () => fetch('/api/subscriber/me')
       .then(r => { if (!r.ok) throw new Error(); return r.json() })
       .then(d => { setData(d); setLoading(false) })
       .catch(() => { router.replace('/'); })
-    fetch('/api/announcements').then(r => r.json()).then(d => setAnnouncements(d.announcements ?? [])).catch(() => {})
-    fetch('/api/announcements/unread-count').then(r => r.json()).then(d => setUnreadCount(d.count ?? 0)).catch(() => {})
+    const fetchAnnouncements = () => fetch('/api/announcements').then(r => r.json()).then(d => setAnnouncements(d.announcements ?? [])).catch(() => {})
+    const fetchUnread = () => fetch('/api/announcements/unread-count').then(r => r.json()).then(d => setUnreadCount(d.count ?? 0)).catch(() => {})
+
+    fetchMe()
+    fetchAnnouncements()
+    fetchUnread()
+
+    // Refresh when tab becomes visible
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') {
+        fetchMe()
+        fetchAnnouncements()
+        fetchUnread()
+      }
+    }
+    document.addEventListener('visibilitychange', onVisible)
+
+    // Poll notifications every 5 minutes
+    const interval = setInterval(() => {
+      fetchUnread()
+      fetchAnnouncements()
+    }, 5 * 60 * 1000)
+
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible)
+      clearInterval(interval)
+    }
   }, [router])
 
   const onTabClick = (key: Tab) => {
