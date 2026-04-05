@@ -19,8 +19,11 @@ export async function GET() {
       FROM announcements
       WHERE tenant_id = ${subscriber.tenant_id}
       AND (
-        target = 'all'
-        OR target = ${subscriber.subscription_type}
+        subscriber_id = ${subscriberId}
+        OR (
+          subscriber_id IS NULL
+          AND (target = 'all' OR target = ${subscriber.subscription_type})
+        )
       )
       ORDER BY created_at DESC
       LIMIT 20
