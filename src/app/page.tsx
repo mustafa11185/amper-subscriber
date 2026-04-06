@@ -11,24 +11,35 @@ export default function HomePage() {
   const [error, setError] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Check if already logged in
+  // Check if already logged in (via localStorage — httpOnly cookie not readable from JS)
   useEffect(() => {
-    const sid = document.cookie.split(';').find(c => c.trim().startsWith('subscriber_id='))
-    if (sid) { router.replace('/home'); return }
+    const saved = localStorage.getItem('amper_code')
+
     // Auto-login via ?code= query param (from printed QR)
     const params = new URLSearchParams(window.location.search)
     const qrCode = params.get('code')
-    if (!qrCode) return
-    const cleaned = qrCode.toUpperCase().trim().replace(/\s+/g, '').replace(/[^A-Z0-9-]/g, '')
-    if (cleaned.length < 10) return
+    const codeToUse = qrCode
+      ? qrCode.toUpperCase().trim().replace(/\s+/g, '').replace(/[^A-Z0-9-]/g, '')
+      : saved
+
+    if (!codeToUse || codeToUse.length < 6) return
+
+    setLoading(true)
     fetch('/api/lookup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code: cleaned }),
+      body: JSON.stringify({ code: codeToUse }),
     })
       .then(r => r.json())
-      .then(data => { if (data.ok) router.replace('/home') })
-      .catch(() => {})
+      .then(data => {
+        if (data.ok) {
+          localStorage.setItem('amper_code', codeToUse)
+          router.replace('/home')
+        } else {
+          setLoading(false)
+        }
+      })
+      .catch(() => setLoading(false))
   }, [router])
 
   function cleanCode(raw: string): string {
@@ -60,6 +71,7 @@ export default function HomePage() {
       })
       const data = await res.json()
       if (data.ok) {
+        localStorage.setItem('amper_code', c)
         router.push('/home')
       } else {
         setError(data.error || 'الكود غير صحيح')

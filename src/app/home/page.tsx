@@ -168,6 +168,7 @@ export default function SubscriberHomePage() {
 
   function logout() {
     document.cookie = 'subscriber_id=; path=/; max-age=0'
+    localStorage.removeItem('amper_code')
     router.replace('/')
   }
 
