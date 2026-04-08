@@ -90,7 +90,7 @@ export default function HomePage() {
         {/* Logo */}
         <div className="flex items-center justify-center gap-2">
           <svg width="32" height="32" viewBox="0 0 32 32">
-            <polygon points="16,2 28,9 28,23 16,30 4,23 4,9" fill="#1B4FD8" />
+            <polygon points="16,2 28,9 28,23 16,30 4,23 4,9" fill="#1A237E" />
             <text x="16" y="21" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">⚡</text>
           </svg>
           <h1 className="text-2xl font-bold" style={{ color: '#0F172A', fontFamily: 'Rajdhani, sans-serif' }}>أمبير</h1>
@@ -113,14 +113,14 @@ export default function HomePage() {
           autoComplete="off"
           autoCorrect="off"
           spellCheck={false}
-          className="w-full rounded-2xl text-center font-mono font-bold outline-none tracking-wider"
+          className="w-full rounded-xl text-center font-mono font-bold outline-none tracking-wider"
           style={{
             height: 56,
             fontSize: 22,
-            background: 'var(--bg-surface)',
-            border: code ? '2px solid var(--brand-primary)' : '2px solid var(--border)',
-            color: '#0F172A',
-            caretColor: '#1B4FD8',
+            background: '#F8F9FB',
+            border: code ? '1.5px solid #1A237E' : '1.5px solid var(--border)',
+            color: '#111827',
+            caretColor: '#1A237E',
           }}
         />
 
@@ -129,8 +129,8 @@ export default function HomePage() {
         <button
           onClick={handleSubmit}
           disabled={loading || cleanCode(code).length < 10}
-          className="w-full h-14 rounded-2xl text-white text-base font-bold disabled:opacity-50 flex items-center justify-center gap-2"
-          style={{ background: '#1B4FD8', boxShadow: '0 4px 20px rgba(27,79,216,0.3)' }}
+          className="w-full h-14 rounded-xl text-white text-base font-bold disabled:opacity-50 flex items-center justify-center gap-2"
+          style={{ background: '#1A237E' }}
         >
           {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
           {loading ? 'جاري الدخول...' : 'دخول'}

@@ -43,7 +43,7 @@ function methodLabel(method: string): string {
 
 function methodIcon(method: string) {
   if (method === 'cash') return <Banknote className="w-4 h-4" style={{ color: '#059669' }} />
-  return <CreditCard className="w-4 h-4" style={{ color: '#1B4FD8' }} />
+  return <CreditCard className="w-4 h-4" style={{ color: '#1A237E' }} />
 }
 
 function formatDate(dateStr: string): string {
@@ -78,7 +78,7 @@ export default function PaymentHistoryPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-dvh" style={{ background: 'var(--bg-base)' }}>
-        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#1B4FD8' }} />
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#1A237E' }} />
       </div>
     )
   }
@@ -90,11 +90,11 @@ export default function PaymentHistoryPage() {
         <button
           onClick={() => router.push('/home')}
           className="w-9 h-9 rounded-xl flex items-center justify-center"
-          style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}
+          style={{ background: '#F5F6F8' }}
         >
-          <ArrowRight className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} />
+          <ArrowRight className="w-5 h-5" style={{ color: '#6B7280' }} />
         </button>
-        <h1 className="text-lg font-bold">سجل الدفعات</h1>
+        <h1 className="text-lg font-bold" style={{ color: '#1A237E' }}>سجل الدفعات</h1>
       </div>
 
       <div className="px-4 space-y-3">
@@ -113,52 +113,43 @@ export default function PaymentHistoryPage() {
           </div>
         )}
 
-        {payments.map(p => (
+        {payments.map((p, i) => (
           <div
             key={p.id}
-            className="rounded-2xl p-4 animate-fade-in"
-            style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}
+            className="py-3 animate-fade-in"
+            style={{ borderBottom: i < payments.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}
           >
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 {methodIcon(p.payment_method)}
-                <span className="text-[11px] px-2 py-0.5 rounded-full font-medium"
-                  style={{
-                    background: p.payment_method === 'cash' ? 'rgba(5,150,105,0.1)' : 'rgba(27,79,216,0.1)',
-                    color: p.payment_method === 'cash' ? '#059669' : '#1B4FD8',
-                  }}>
+                <span className="text-[11px] font-medium" style={{ color: p.payment_method === 'cash' ? '#059669' : '#1A237E' }}>
                   {methodLabel(p.payment_method)}
                 </span>
-              </div>
-              <div className="flex items-center gap-1">
                 {p.is_fully_paid ? (
-                  <CheckCircle2 className="w-4 h-4" style={{ color: '#22C55E' }} />
+                  <CheckCircle2 className="w-3.5 h-3.5" style={{ color: '#16A34A' }} />
                 ) : (
-                  <Clock className="w-4 h-4" style={{ color: '#D97706' }} />
+                  <Clock className="w-3.5 h-3.5" style={{ color: '#D97706' }} />
                 )}
-                <span className="text-[10px]" style={{ color: p.is_fully_paid ? '#22C55E' : '#D97706' }}>
-                  {p.is_fully_paid ? 'مدفوعة بالكامل' : 'دفع جزئي'}
-                </span>
               </div>
-            </div>
-
-            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-bold">{formatBillingMonth(p.billing_month, p.billing_year)}</p>
-                <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                <p className="text-sm font-bold text-right">{formatBillingMonth(p.billing_month, p.billing_year)}</p>
+                <p className="text-[10px] mt-0.5 text-right" style={{ color: '#9CA3AF' }}>
                   {formatDate(p.updated_at)}
                 </p>
               </div>
-              <div className="text-left">
-                <p className="font-num text-base font-bold" style={{ color: '#0F172A' }}>
-                  {fmt(p.amount_paid)} <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>د.ع</span>
-                </p>
+            </div>
+
+            <div className="flex items-center justify-between mt-1.5">
+              <div>
                 {!p.is_fully_paid && (
                   <p className="text-[10px]" style={{ color: '#D97706' }}>
                     من أصل {fmt(p.total_amount_due)} د.ع
                   </p>
                 )}
               </div>
+              <p className="font-num text-lg font-bold" style={{ color: '#111827' }}>
+                {fmt(p.amount_paid)} <span className="text-[10px] font-normal" style={{ color: '#9CA3AF' }}>د.ع</span>
+              </p>
             </div>
           </div>
         ))}
@@ -171,33 +162,32 @@ export default function PaymentHistoryPage() {
                 الدفعات الإلكترونية
               </p>
             </div>
-            {onlinePayments.map(op => (
+            {onlinePayments.map((op, i) => (
               <div
                 key={op.id}
-                className="rounded-2xl p-4 animate-fade-in"
-                style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}
+                className="py-3 animate-fade-in"
+                style={{ borderBottom: i < onlinePayments.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}
               >
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <CreditCard className="w-4 h-4" style={{ color: '#7C3AED' }} />
-                    <span className="text-[11px] px-2 py-0.5 rounded-full font-medium"
-                      style={{ background: 'rgba(124,58,237,0.1)', color: '#7C3AED' }}>
+                    <CreditCard className="w-4 h-4" style={{ color: '#1A237E' }} />
+                    <span className="text-[11px] font-medium" style={{ color: '#1A237E' }}>
                       {op.gateway}
                     </span>
+                    <CheckCircle2 className="w-3.5 h-3.5" style={{ color: '#16A34A' }} />
                   </div>
-                  <CheckCircle2 className="w-4 h-4" style={{ color: '#22C55E' }} />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{formatDate(op.created_at)}</p>
+                  <div className="text-right">
+                    <p className="text-[10px]" style={{ color: '#9CA3AF' }}>{formatDate(op.created_at)}</p>
                     {op.gateway_ref && (
-                      <p className="text-[9px] font-mono mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                      <p className="text-[9px] font-mono mt-0.5" style={{ color: '#9CA3AF' }}>
                         #{op.gateway_ref.slice(0, 12)}
                       </p>
                     )}
                   </div>
-                  <p className="font-num text-base font-bold" style={{ color: '#0F172A' }}>
-                    {fmt(op.amount)} <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>د.ع</span>
+                </div>
+                <div className="flex items-center justify-end mt-1">
+                  <p className="font-num text-lg font-bold" style={{ color: '#111827' }}>
+                    {fmt(op.amount)} <span className="text-[10px] font-normal" style={{ color: '#9CA3AF' }}>د.ع</span>
                   </p>
                 </div>
               </div>

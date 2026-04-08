@@ -94,12 +94,12 @@ export default function SubscriberHomePage() {
   if (loading || !data) {
     return (
       <div className="flex items-center justify-center min-h-dvh" style={{ background: 'var(--bg-base)' }}>
-        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#1B4FD8' }} />
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#1A237E' }} />
       </div>
     )
   }
 
-  const brandColor = data.settings.primary_color || '#1B4FD8'
+  const brandColor = data.settings.primary_color || '#1A237E'
   const inv = data.current_invoice
   const invoiceDue = inv ? inv.total_amount_due - inv.amount_paid : 0
   const hasPayment = data.settings.furatpay_enabled || data.settings.active_gateway === 'aps'
@@ -217,13 +217,13 @@ export default function SubscriberHomePage() {
       <div className="flex-1 pb-20" style={{ background: 'var(--bg-base)', color: 'var(--text-primary)' }}>
         {/* Header */}
         <div className="p-4 flex items-center justify-between">
-          <div>
-            <p className="text-sm font-bold">{data.name}</p>
-            <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{data.branch_name}</p>
-          </div>
-          <button onClick={logout} className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
-            <LogOut className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+          <button onClick={logout} className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#F5F6F8' }}>
+            <LogOut className="w-4 h-4" style={{ color: '#9CA3AF' }} />
           </button>
+          <div className="text-right">
+            <p className="text-sm font-bold" style={{ color: '#111827' }}>أهلاً {data.name} 👋</p>
+            <p className="text-[10px]" style={{ color: '#9CA3AF' }}>{data.branch_name}</p>
+          </div>
         </div>
 
         <div className="px-4 space-y-4">
@@ -232,24 +232,23 @@ export default function SubscriberHomePage() {
               {/* Feature 6: Unpaid invoice banner */}
               {inv && !inv.is_fully_paid && (
                 <div
-                  className="rounded-2xl p-4 flex items-center justify-between animate-fade-in"
-                  style={{ background: 'linear-gradient(135deg, #D97706, #F59E0B)', color: '#FFF' }}
+                  className="rounded-xl p-4 flex items-center justify-between animate-fade-in"
+                  style={{ background: '#FEF2F2', borderRight: '3px solid #DC2626' }}
                 >
                   <button
                     onClick={() => setTab('pay')}
-                    className="text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1 flex-shrink-0"
-                    style={{ background: 'rgba(255,255,255,0.25)', color: '#FFF' }}
+                    className="text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 flex-shrink-0"
+                    style={{ background: '#1A237E', color: '#FFF' }}
                   >
                     ادفع الآن
                     <ArrowLeft className="w-3 h-3" />
                   </button>
                   <div className="text-right">
-                    <p className="text-xs font-bold flex items-center justify-end gap-1">
-                      <span>فاتورة {invMonthName} جاهزة</span>
-                      <Bell className="w-3.5 h-3.5" />
+                    <p className="text-xs font-bold flex items-center justify-end gap-1" style={{ color: '#DC2626' }}>
+                      <span>فاتورة {invMonthName} غير مدفوعة</span>
                     </p>
-                    <p className="font-num text-lg font-bold mt-0.5">
-                      {fmt(invoiceDue)} <span className="text-[10px] opacity-80">د.ع</span>
+                    <p className="font-num text-lg font-bold mt-0.5" style={{ color: '#111827' }}>
+                      {fmt(invoiceDue)} <span className="text-[10px]" style={{ color: '#9CA3AF' }}>د.ع</span>
                     </p>
                   </div>
                 </div>
@@ -257,32 +256,43 @@ export default function SubscriberHomePage() {
 
               {/* Generator status */}
               {data.generator_status && (
-                <div className="rounded-2xl p-4" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-2.5 h-2.5 rounded-full" style={{ background: data.generator_status.run_status ? '#22C55E' : '#EF4444' }} />
-                    <span className="text-xs">{data.generator_status.name}</span>
-                    <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{data.generator_status.run_status ? 'تعمل' : 'متوقفة'}</span>
+                <div className="py-3 px-1 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {(data.generator_status.gold_hours_today != null || data.generator_status.normal_hours_today != null) && (
+                      <>
+                        <span className="text-[10px]" style={{ color: '#9CA3AF' }}>{data.generator_status.gold_hours_today ?? 0}h ذهبي</span>
+                        <span className="text-[10px]" style={{ color: '#9CA3AF' }}>{data.generator_status.normal_hours_today ?? 0}h عادي</span>
+                      </>
+                    )}
                   </div>
-                  {(data.generator_status.gold_hours_today != null || data.generator_status.normal_hours_today != null) && (
-                    <div className="flex items-center gap-4 mt-2 pt-2" style={{ borderTop: '1px solid #E2E8F0' }}>
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="w-3 h-3" style={{ color: '#D97706' }} />
-                        <span className="text-[10px]" style={{ color: '#D97706' }}>{data.generator_status.gold_hours_today ?? 0}h ذهبي</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="w-3 h-3" style={{ color: 'var(--text-muted)' }} />
-                        <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{data.generator_status.normal_hours_today ?? 0}h عادي</span>
-                      </div>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs" style={{ color: '#6B7280' }}>{data.generator_status.name}</span>
+                    <span className="text-[10px]" style={{ color: data.generator_status.run_status ? '#16A34A' : '#DC2626' }}>{data.generator_status.run_status ? 'تعمل' : 'متوقفة'}</span>
+                    <div className={`w-2 h-2 rounded-full ${data.generator_status.run_status ? 'pulse-green' : 'pulse-dot-red'}`} style={{ background: data.generator_status.run_status ? '#16A34A' : '#DC2626' }} />
+                  </div>
                 </div>
               )}
 
               {/* Invoice card */}
-              <div className="rounded-2xl p-5 text-center text-white" style={{ background: `linear-gradient(135deg, ${brandColor}, ${brandColor}CC)` }}>
-                <p className="text-xs opacity-80 mb-1">{inv ? `فاتورة ${formatBillingMonth(inv.billing_month, inv.billing_year)}` : 'لا توجد فاتورة'}</p>
-                <p className="font-num text-3xl font-bold">{fmt(invoiceDue)}<span className="text-sm mr-1 opacity-60">د.ع</span></p>
-                {inv?.is_fully_paid && <p className="text-xs mt-1 opacity-80">✅ مدفوعة</p>}
+              <div className="rounded-xl p-6 text-center" style={{ background: '#FFFFFF', boxShadow: 'var(--shadow-card)' }}>
+                <p className="text-xs mb-2" style={{ color: '#9CA3AF' }}>المبلغ المستحق</p>
+                <p className="font-num text-4xl font-bold" style={{ color: '#111827' }}>{fmt(invoiceDue)}<span className="text-sm mr-1" style={{ color: '#9CA3AF' }}>د.ع</span></p>
+                <p className="text-[11px] mt-1" style={{ color: '#9CA3AF' }}>دينار عراقي</p>
+                {inv && (
+                  <p className="text-xs mt-2" style={{ color: '#6B7280' }}>
+                    {formatBillingMonth(inv.billing_month, inv.billing_year)} — {data.amperage} أمبير
+                  </p>
+                )}
+                {inv?.is_fully_paid && <p className="text-xs mt-2" style={{ color: '#16A34A' }}>مدفوعة بالكامل</p>}
+                {inv && !inv.is_fully_paid && hasPayment && (
+                  <button
+                    onClick={() => setTab('pay')}
+                    className="w-full h-12 rounded-xl text-white text-sm font-bold mt-4"
+                    style={{ background: '#1A237E' }}
+                  >
+                    ادفع الآن
+                  </button>
+                )}
               </div>
 
               {/* Upsell for normal subscribers */}
@@ -304,18 +314,16 @@ export default function SubscriberHomePage() {
               {/* Feature 7: Payment history link */}
               <button
                 onClick={() => router.push('/history')}
-                className="w-full rounded-2xl p-4 flex items-center justify-between"
-                style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}
+                className="w-full rounded-xl p-4 flex items-center justify-between"
+                style={{ background: '#F5F6F8' }}
               >
-                <ArrowLeft className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+                <ArrowLeft className="w-4 h-4" style={{ color: '#9CA3AF' }} />
                 <div className="flex items-center gap-2">
                   <div>
-                    <p className="text-sm font-bold text-right">سجل الدفعات</p>
-                    <p className="text-[10px] text-right" style={{ color: 'var(--text-muted)' }}>عرض جميع الدفعات السابقة</p>
+                    <p className="text-sm font-bold text-right" style={{ color: '#111827' }}>سجل الدفعات</p>
+                    <p className="text-[10px] text-right" style={{ color: '#9CA3AF' }}>عرض جميع الدفعات السابقة</p>
                   </div>
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(27,79,216,0.08)' }}>
-                    <History className="w-5 h-5" style={{ color: '#1B4FD8' }} />
-                  </div>
+                  <History className="w-5 h-5" style={{ color: '#1A237E' }} />
                 </div>
               </button>
 
@@ -342,7 +350,7 @@ export default function SubscriberHomePage() {
                   <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>تواصل مع صاحب المولدة لتفعيل الدفع الإلكتروني</p>
                   {data.settings.collector_call_enabled && (
                     <button onClick={handleCallCollector} disabled={callingCollector}
-                      className="w-full h-12 rounded-xl text-sm font-bold text-white disabled:opacity-60" style={{ background: brandColor }}>
+                      className="w-full h-12 rounded-xl text-sm font-bold text-white disabled:opacity-60" style={{ background: '#1A237E' }}>
                       {callingCollector ? 'جاري...' : '📞 أرسل الجابي'}
                     </button>
                   )}
@@ -350,19 +358,19 @@ export default function SubscriberHomePage() {
               ) : (
                 <div className="space-y-3">
                   {/* Amount card */}
-                  <div className="rounded-2xl overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
-                    <div className="p-4 text-center text-white" style={{ background: `linear-gradient(135deg, ${brandColor}, ${brandColor}DD)` }}>
-                      <p className="text-xs opacity-80 mb-1">المبلغ المستحق</p>
-                      <p className="font-num text-3xl font-bold">{fmt(totalDue)}<span className="text-sm mr-1 opacity-60">د.ع</span></p>
+                  <div className="rounded-xl overflow-hidden" style={{ background: '#FFFFFF', boxShadow: 'var(--shadow-card)' }}>
+                    <div className="p-5 text-center">
+                      <p className="text-xs mb-2" style={{ color: '#9CA3AF' }}>المبلغ المستحق</p>
+                      <p className="font-num text-4xl font-bold" style={{ color: '#111827' }}>{fmt(totalDue)}<span className="text-sm mr-1" style={{ color: '#9CA3AF' }}>د.ع</span></p>
                     </div>
-                    <div className="flex" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', background: `linear-gradient(135deg, ${brandColor}EE, ${brandColor}CC)` }}>
-                      <div className="flex-1 p-3 text-center" style={{ borderLeft: '1px solid rgba(255,255,255,0.1)' }}>
-                        <p className="text-white/50 text-[10px] mb-0.5">فاتورة {invMonthName}</p>
-                        <p className="text-white font-bold font-num text-sm">{fmt(invoiceDue)}</p>
+                    <div className="flex" style={{ borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+                      <div className="flex-1 p-3 text-center" style={{ borderLeft: '1px solid rgba(0,0,0,0.06)' }}>
+                        <p className="text-[10px] mb-0.5" style={{ color: '#9CA3AF' }}>فاتورة {invMonthName}</p>
+                        <p className="font-bold font-num text-sm" style={{ color: '#111827' }}>{fmt(invoiceDue)}</p>
                       </div>
                       <div className="flex-1 p-3 text-center">
-                        <p className="text-white/50 text-[10px] mb-0.5">ديون سابقة</p>
-                        <p className={`font-bold font-num text-sm ${data.total_debt > 0 ? 'text-red-300' : 'text-white'}`}>{fmt(data.total_debt)}</p>
+                        <p className="text-[10px] mb-0.5" style={{ color: '#9CA3AF' }}>ديون سابقة</p>
+                        <p className={`font-bold font-num text-sm`} style={{ color: data.total_debt > 0 ? '#DC2626' : '#111827' }}>{fmt(data.total_debt)}</p>
                       </div>
                     </div>
                   </div>
@@ -371,9 +379,9 @@ export default function SubscriberHomePage() {
 
                   {/* Qi Card / Mastercard */}
                   <button onClick={() => { setPayMethod('qi_card'); setShowCardSheet(true) }}
-                    className="w-full rounded-2xl p-3 flex items-center justify-between"
-                    style={{ background: 'var(--bg-surface)', border: '2px solid #1B4FD8', boxShadow: '0 2px 8px rgba(27,79,216,0.12)' }}>
-                    <span style={{ color: '#1B4FD8' }}>&#x203A;</span>
+                    className="w-full rounded-xl p-3 flex items-center justify-between"
+                    style={{ background: '#FFFFFF', border: '1.5px solid #1A237E' }}>
+                    <span style={{ color: '#1A237E' }}>&#x203A;</span>
                     <div className="flex items-center gap-2">
                       <div className="text-right">
                         <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>كي كارد / ماستركارد</p>
@@ -388,8 +396,8 @@ export default function SubscriberHomePage() {
 
                   {/* Visa */}
                   <button onClick={() => { setPayMethod('visa'); setShowCardSheet(true) }}
-                    className="w-full rounded-2xl p-3 flex items-center justify-between"
-                    style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
+                    className="w-full rounded-xl p-3 flex items-center justify-between"
+                    style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)' }}>
                     <span style={{ color: 'var(--text-muted)' }}>&#x203A;</span>
                     <div className="flex items-center gap-2">
                       <div className="text-right">
@@ -404,8 +412,8 @@ export default function SubscriberHomePage() {
 
                   {/* ZainCash */}
                   <button onClick={() => { setPayMethod('zaincash'); handleZainPay() }}
-                    className="w-full rounded-2xl p-3 flex items-center justify-between"
-                    style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
+                    className="w-full rounded-xl p-3 flex items-center justify-between"
+                    style={{ background: '#FFFFFF', border: '1px solid rgba(0,0,0,0.06)' }}>
                     <span style={{ color: 'var(--text-muted)' }}>&#x203A;</span>
                     <div className="flex items-center gap-2">
                       <div className="text-right">
@@ -428,18 +436,19 @@ export default function SubscriberHomePage() {
             <div className="space-y-3">
               <h2 className="text-lg font-bold">سجل الفواتير</h2>
               {data.invoices_history.length === 0 ? (
-                <p className="text-center text-xs py-8" style={{ color: 'var(--text-muted)' }}>لا توجد فواتير</p>
-              ) : data.invoices_history.map(inv => (
-                <div key={inv.id} className="rounded-xl p-3 flex items-center justify-between" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
-                  <div>
-                    <p className="text-xs font-bold">{formatBillingMonth(inv.billing_month, inv.billing_year)}</p>
+                <p className="text-center text-xs py-8" style={{ color: '#9CA3AF' }}>لا توجد فواتير</p>
+              ) : data.invoices_history.map((inv, i) => (
+                <div key={inv.id} className="py-3 flex items-center justify-between" style={{ borderBottom: i < data.invoices_history.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
+                  <div className="flex items-center gap-2">
+                    <span className="font-num text-lg font-bold" style={{ color: '#111827' }}>{fmt(inv.total_amount_due)}</span>
+                    <span className="text-[10px]" style={{ color: '#9CA3AF' }}>د.ع</span>
+                    {inv.is_fully_paid ? (
+                      <CheckCircle2 className="w-3.5 h-3.5" style={{ color: '#16A34A' }} />
+                    ) : (
+                      <Clock className="w-3.5 h-3.5" style={{ color: '#DC2626' }} />
+                    )}
                   </div>
-                  <div className="text-left">
-                    <p className="font-num text-xs font-bold">{fmt(inv.total_amount_due)} د.ع</p>
-                    <span className="text-[10px]" style={{ color: inv.is_fully_paid ? '#22C55E' : '#EF4444' }}>
-                      {inv.is_fully_paid ? '✅ مدفوعة' : '⏳ غير مدفوعة'}
-                    </span>
-                  </div>
+                  <p className="text-sm font-bold" style={{ color: '#111827' }}>{formatBillingMonth(inv.billing_month, inv.billing_year)}</p>
                 </div>
               ))}
             </div>
@@ -486,8 +495,8 @@ export default function SubscriberHomePage() {
               <h2 className="text-lg font-bold">تواصل</h2>
               {data.settings.collector_call_enabled && (
                 <button onClick={handleCallCollector} disabled={callingCollector}
-                  className="w-full h-14 rounded-2xl text-white text-sm font-bold disabled:opacity-60 flex items-center justify-center gap-2"
-                  style={{ background: brandColor }}>
+                  className="w-full h-14 rounded-xl text-white text-sm font-bold disabled:opacity-60 flex items-center justify-center gap-2"
+                  style={{ background: '#1A237E' }}>
                   <PhoneCall className="w-5 h-5" />
                   {callingCollector ? 'جاري...' : '📞 اطلب زيارة الجابي'}
                 </button>
@@ -552,8 +561,8 @@ export default function SubscriberHomePage() {
                 className="w-full rounded-xl px-3 py-3 text-right text-sm mb-4 outline-none"
                 style={{ background: '#F8FAFC', border: '1px solid var(--border)' }} />
               <button onClick={handleCardPay} disabled={payLoading || !cardNum || !cardExpiry || !cardCvv}
-                className="w-full py-4 rounded-2xl text-white font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
-                style={{ background: payLoading ? '#94A3B8' : `linear-gradient(135deg, ${brandColor}, #7C3AED)` }}>
+                className="w-full py-4 rounded-xl text-white font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                style={{ background: payLoading ? '#94A3B8' : '#1A237E' }}>
                 {payLoading ? '⏳ جارٍ الدفع...' : `ادفع الآن ${fmt(totalDue)} د.ع`}
               </button>
               <p className="text-center text-[10px] mt-2" style={{ color: '#94A3B8' }}>🔒 مشفّر بـ SSL 256-bit</p>
@@ -594,7 +603,7 @@ export default function SubscriberHomePage() {
                   <p className="text-[11px] mb-1" style={{ color: 'var(--text-muted)' }}>رقم محفظة ZainCash</p>
                   <p className="font-bold text-lg tracking-widest" style={{ color: '#009944' }}>{zainData.merchant_phone}</p>
                   <button onClick={() => { navigator.clipboard.writeText(zainData.merchant_phone!); toast.success('تم نسخ الرقم') }}
-                    className="text-[11px] mt-1" style={{ color: '#1B4FD8' }}>📋 نسخ الرقم</button>
+                    className="text-[11px] mt-1" style={{ color: '#1A237E' }}>📋 نسخ الرقم</button>
                 </div>
               )}
             </div>
@@ -602,7 +611,7 @@ export default function SubscriberHomePage() {
         )}
 
         {/* Bottom nav */}
-        <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ background: 'var(--bg-surface)', borderTop: '1px solid var(--border)' }}>
+        <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ background: '#FFFFFF', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
           <div className="max-w-[390px] mx-auto flex items-center justify-around h-16 pb-[env(safe-area-inset-bottom)]">
             {tabs.map(t => {
               const isActive = tab === t.key
@@ -610,14 +619,14 @@ export default function SubscriberHomePage() {
               return (
                 <button key={t.key} onClick={() => onTabClick(t.key)} className="flex flex-col items-center gap-1 py-2 px-3">
                   <span className="relative inline-block">
-                    <Icon className="w-5 h-5" style={{ color: isActive ? brandColor : 'var(--text-muted)' }} />
+                    <Icon className="w-5 h-5" style={{ color: isActive ? '#1A237E' : '#9CA3AF' }} />
                     {t.key === 'alerts' && unreadCount > 0 && (
-                      <span className="absolute -top-1.5 -right-2 flex items-center justify-center rounded-full text-white font-bold" style={{ background: '#C62828', minWidth: '16px', height: '16px', fontSize: '9px', padding: '0 4px' }}>
+                      <span className="absolute -top-1.5 -right-2 flex items-center justify-center rounded-full text-white font-bold" style={{ background: '#DC2626', minWidth: '16px', height: '16px', fontSize: '9px', padding: '0 4px' }}>
                         {unreadCount > 9 ? '9+' : unreadCount}
                       </span>
                     )}
                   </span>
-                  <span className="text-[10px]" style={{ color: isActive ? brandColor : '#64748B', fontWeight: isActive ? 700 : 400 }}>{t.label}</span>
+                  <span className="text-[10px]" style={{ color: isActive ? '#1A237E' : '#9CA3AF', fontWeight: isActive ? 700 : 400 }}>{t.label}</span>
                 </button>
               )
             })}
@@ -637,13 +646,13 @@ function UpsellCard() {
   if (!show) return null
 
   return (
-    <div className="rounded-2xl p-4" style={{ background: 'linear-gradient(135deg, #D97706, #F59E0B)', color: '#FFF' }}>
+    <div className="rounded-xl p-4" style={{ background: '#FFFBEB', borderRight: '3px solid #D97706' }}>
       <div className="flex items-start justify-between mb-2">
+        <button onClick={() => setShow(false)} className="text-xs" style={{ color: '#9CA3AF' }}>✕</button>
         <span className="text-base">⭐</span>
-        <button onClick={() => setShow(false)} className="text-xs opacity-70">✕</button>
       </div>
-      <p className="text-sm font-bold mb-1">هل تعلم؟</p>
-      <p className="text-xs opacity-90 leading-relaxed">مشتركو الذهبي يحصلون على ساعات أكثر — تحدث مع صاحب المولدة للترقية</p>
+      <p className="text-sm font-bold mb-1 text-right" style={{ color: '#111827' }}>هل تعلم؟</p>
+      <p className="text-xs leading-relaxed text-right" style={{ color: '#6B7280' }}>مشتركو الذهبي يحصلون على ساعات أكثر — تحدث مع صاحب المولدة للترقية</p>
     </div>
   )
 }
@@ -737,7 +746,7 @@ function RatingCard({ subscriberId }: { subscriberId: string }) {
         onClick={handleSubmit}
         disabled={rating === 0 || submitting}
         className="w-full h-11 rounded-xl text-white text-sm font-bold disabled:opacity-50 flex items-center justify-center gap-2"
-        style={{ background: rating > 0 ? '#1B4FD8' : '#94A3B8' }}
+        style={{ background: rating > 0 ? '#1A237E' : '#94A3B8' }}
       >
         {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
         {submitting ? 'جاري الإرسال...' : 'إرسال التقييم'}
@@ -860,7 +869,7 @@ function ChangeRequestCard({ amperage, subscriptionType }: { amperage: number; s
             onClick={handleSubmit}
             disabled={submitting || (Number(reqAmperage) === amperage && reqType === subscriptionType)}
             className="w-full h-11 rounded-xl text-white text-sm font-bold disabled:opacity-50 flex items-center justify-center gap-2"
-            style={{ background: 'linear-gradient(135deg, #7C3AED, #1B4FD8)' }}
+            style={{ background: '#1A237E' }}
           >
             {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             {submitting ? 'جاري الإرسال...' : 'إرسال الطلب'}
@@ -903,13 +912,13 @@ function InstallBanner() {
         </div>
         {isIOS ? (
           <p className="text-[10px] mb-2" style={{ color: '#94A3B8' }}>
-            اضغط <span style={{ color: '#1B4FD8' }}>مشاركة ↗</span> ثم <span style={{ color: '#1B4FD8' }}>إضافة للشاشة الرئيسية</span>
+            اضغط <span style={{ color: '#1A237E' }}>مشاركة ↗</span> ثم <span style={{ color: '#1A237E' }}>إضافة للشاشة الرئيسية</span>
           </p>
         ) : (
           <button onClick={async () => {
             if (prompt) { prompt.prompt(); const r = await prompt.userChoice; if (r.outcome === 'accepted') setShow(false) }
           }}
-            className="w-full h-9 rounded-xl text-white text-xs font-bold" style={{ background: '#1B4FD8' }}>
+            className="w-full h-9 rounded-xl text-white text-xs font-bold" style={{ background: '#1A237E' }}>
             إضافة للشاشة الرئيسية
           </button>
         )}
