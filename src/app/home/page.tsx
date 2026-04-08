@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import {
   Zap, CreditCard, Phone, AlertTriangle, CheckCircle2,
   Clock, Loader2, FileText, PhoneCall, LogOut, Bell,
+  Star, Send, ChevronDown, History, ArrowLeft,
 } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
 
@@ -228,6 +229,32 @@ export default function SubscriberHomePage() {
         <div className="px-4 space-y-4">
           {tab === 'home' && (
             <>
+              {/* Feature 6: Unpaid invoice banner */}
+              {inv && !inv.is_fully_paid && (
+                <div
+                  className="rounded-2xl p-4 flex items-center justify-between animate-fade-in"
+                  style={{ background: 'linear-gradient(135deg, #D97706, #F59E0B)', color: '#FFF' }}
+                >
+                  <button
+                    onClick={() => setTab('pay')}
+                    className="text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1 flex-shrink-0"
+                    style={{ background: 'rgba(255,255,255,0.25)', color: '#FFF' }}
+                  >
+                    ادفع الآن
+                    <ArrowLeft className="w-3 h-3" />
+                  </button>
+                  <div className="text-right">
+                    <p className="text-xs font-bold flex items-center justify-end gap-1">
+                      <span>فاتورة {invMonthName} جاهزة</span>
+                      <Bell className="w-3.5 h-3.5" />
+                    </p>
+                    <p className="font-num text-lg font-bold mt-0.5">
+                      {fmt(invoiceDue)} <span className="text-[10px] opacity-80">د.ع</span>
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Generator status */}
               {data.generator_status && (
                 <div className="rounded-2xl p-4" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
@@ -273,6 +300,33 @@ export default function SubscriberHomePage() {
                   <span className="font-num text-sm font-bold" style={{ color: '#EF4444' }}>{fmt(data.total_debt)} د.ع</span>
                 </div>
               )}
+
+              {/* Feature 7: Payment history link */}
+              <button
+                onClick={() => router.push('/history')}
+                className="w-full rounded-2xl p-4 flex items-center justify-between"
+                style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}
+              >
+                <ArrowLeft className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+                <div className="flex items-center gap-2">
+                  <div>
+                    <p className="text-sm font-bold text-right">سجل الدفعات</p>
+                    <p className="text-[10px] text-right" style={{ color: 'var(--text-muted)' }}>عرض جميع الدفعات السابقة</p>
+                  </div>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(27,79,216,0.08)' }}>
+                    <History className="w-5 h-5" style={{ color: '#1B4FD8' }} />
+                  </div>
+                </div>
+              </button>
+
+              {/* Feature 10: Change subscription request */}
+              <ChangeRequestCard
+                amperage={data.amperage}
+                subscriptionType={data.subscription_type}
+              />
+
+              {/* Feature 8: Service rating */}
+              <RatingCard subscriberId={data.id} />
             </>
           )}
 
@@ -590,6 +644,229 @@ function UpsellCard() {
       </div>
       <p className="text-sm font-bold mb-1">هل تعلم؟</p>
       <p className="text-xs opacity-90 leading-relaxed">مشتركو الذهبي يحصلون على ساعات أكثر — تحدث مع صاحب المولدة للترقية</p>
+    </div>
+  )
+}
+
+function RatingCard({ subscriberId }: { subscriberId: string }) {
+  const [rating, setRating] = useState(0)
+  const [hovered, setHovered] = useState(0)
+  const [comment, setComment] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+
+  useEffect(() => {
+    const key = `amper_rated_${new Date().getFullYear()}_${new Date().getMonth()}`
+    if (localStorage.getItem(key)) setSubmitted(true)
+  }, [])
+
+  async function handleSubmit() {
+    if (rating === 0) return
+    setSubmitting(true)
+    try {
+      const res = await fetch('/api/subscriber/rating', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rating, comment: comment || undefined }),
+      })
+      const data = await res.json()
+      if (res.ok && data.ok) {
+        setSubmitted(true)
+        const key = `amper_rated_${new Date().getFullYear()}_${new Date().getMonth()}`
+        localStorage.setItem(key, 'true')
+        toast.success('شكراً لتقييمك!')
+      } else {
+        toast.error(data.error || 'فشل إرسال التقييم')
+      }
+    } catch {
+      toast.error('خطأ في الاتصال')
+    }
+    setSubmitting(false)
+  }
+
+  if (submitted) {
+    return (
+      <div className="rounded-2xl p-5 text-center" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
+        <p className="text-2xl mb-2">⭐</p>
+        <p className="text-sm font-bold" style={{ color: '#059669' }}>شكراً لتقييمك!</p>
+        <p className="text-[10px] mt-1" style={{ color: 'var(--text-muted)' }}>يساعدنا تقييمك على تحسين الخدمة</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="rounded-2xl p-4" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
+      <div className="flex items-center gap-2 mb-3">
+        <Star className="w-5 h-5" style={{ color: '#D97706' }} />
+        <p className="text-sm font-bold">قيّم الخدمة</p>
+      </div>
+
+      {/* Stars */}
+      <div className="flex items-center justify-center gap-2 mb-3" dir="ltr">
+        {[1, 2, 3, 4, 5].map(n => (
+          <button
+            key={n}
+            onClick={() => setRating(n)}
+            onMouseEnter={() => setHovered(n)}
+            onMouseLeave={() => setHovered(0)}
+            className="transition-transform"
+            style={{ transform: (hovered >= n || rating >= n) ? 'scale(1.15)' : 'scale(1)' }}
+          >
+            <Star
+              className="w-8 h-8"
+              fill={(hovered >= n || rating >= n) ? '#F59E0B' : 'none'}
+              style={{ color: (hovered >= n || rating >= n) ? '#F59E0B' : '#CBD5E1' }}
+            />
+          </button>
+        ))}
+      </div>
+
+      {/* Comment */}
+      <div className="mb-3">
+        <textarea
+          value={comment}
+          onChange={e => setComment(e.target.value)}
+          placeholder="ملاحظة (اختياري) 💬"
+          rows={2}
+          className="w-full rounded-xl px-3 py-2 text-sm outline-none resize-none"
+          style={{ background: '#F8FAFC', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+        />
+      </div>
+
+      <button
+        onClick={handleSubmit}
+        disabled={rating === 0 || submitting}
+        className="w-full h-11 rounded-xl text-white text-sm font-bold disabled:opacity-50 flex items-center justify-center gap-2"
+        style={{ background: rating > 0 ? '#1B4FD8' : '#94A3B8' }}
+      >
+        {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+        {submitting ? 'جاري الإرسال...' : 'إرسال التقييم'}
+      </button>
+    </div>
+  )
+}
+
+function ChangeRequestCard({ amperage, subscriptionType }: { amperage: number; subscriptionType: string }) {
+  const [expanded, setExpanded] = useState(false)
+  const [reqAmperage, setReqAmperage] = useState(String(amperage))
+  const [reqType, setReqType] = useState(subscriptionType)
+  const [notes, setNotes] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+
+  const amperageOptions = [1, 2, 3, 5, 7, 10, 15, 20, 25, 30, 40, 50]
+  const typeLabel = (t: string) => t === 'gold' ? 'ذهبي' : 'عادي'
+
+  async function handleSubmit() {
+    setSubmitting(true)
+    try {
+      const res = await fetch('/api/subscriber/change-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          requested_amperage: Number(reqAmperage),
+          requested_type: reqType,
+          notes: notes || undefined,
+        }),
+      })
+      const data = await res.json()
+      if (res.ok && data.ok) {
+        setSubmitted(true)
+        toast.success(data.message || 'تم إرسال طلبك')
+      } else {
+        toast.error(data.error || 'فشل إرسال الطلب')
+      }
+    } catch {
+      toast.error('خطأ في الاتصال')
+    }
+    setSubmitting(false)
+  }
+
+  if (submitted) {
+    return (
+      <div className="rounded-2xl p-5 text-center" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
+        <p className="text-2xl mb-2">⚡</p>
+        <p className="text-sm font-bold" style={{ color: '#059669' }}>تم إرسال طلبك</p>
+        <p className="text-[10px] mt-1" style={{ color: 'var(--text-muted)' }}>سيتواصل معك المدير قريباً</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full p-4 flex items-center justify-between"
+      >
+        <ChevronDown
+          className="w-4 h-4 transition-transform"
+          style={{ color: 'var(--text-muted)', transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
+        />
+        <div className="flex items-center gap-2">
+          <div className="text-right">
+            <p className="text-sm font-bold">طلب تغيير الاشتراك</p>
+            <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+              الحالي: {amperage} أمبير — {typeLabel(subscriptionType)}
+            </p>
+          </div>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(124,58,237,0.08)' }}>
+            <Zap className="w-5 h-5" style={{ color: '#7C3AED' }} />
+          </div>
+        </div>
+      </button>
+
+      {expanded && (
+        <div className="px-4 pb-4 space-y-3" style={{ borderTop: '1px solid var(--border)' }}>
+          <div className="pt-3">
+            <label className="text-[11px] block text-right mb-1" style={{ color: 'var(--text-muted)' }}>الأمبير الجديد</label>
+            <select
+              value={reqAmperage}
+              onChange={e => setReqAmperage(e.target.value)}
+              className="w-full rounded-xl px-3 py-2.5 text-sm outline-none appearance-none"
+              style={{ background: '#F8FAFC', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+            >
+              {amperageOptions.map(a => (
+                <option key={a} value={a}>{a} أمبير{a === amperage ? ' (الحالي)' : ''}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="text-[11px] block text-right mb-1" style={{ color: 'var(--text-muted)' }}>نوع الاشتراك</label>
+            <select
+              value={reqType}
+              onChange={e => setReqType(e.target.value)}
+              className="w-full rounded-xl px-3 py-2.5 text-sm outline-none appearance-none"
+              style={{ background: '#F8FAFC', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+            >
+              <option value="normal">عادي{subscriptionType === 'normal' ? ' (الحالي)' : ''}</option>
+              <option value="gold">ذهبي{subscriptionType === 'gold' ? ' (الحالي)' : ''}</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="text-[11px] block text-right mb-1" style={{ color: 'var(--text-muted)' }}>ملاحظات (اختياري)</label>
+            <textarea
+              value={notes}
+              onChange={e => setNotes(e.target.value)}
+              placeholder="أي تفاصيل إضافية..."
+              rows={2}
+              className="w-full rounded-xl px-3 py-2 text-sm outline-none resize-none"
+              style={{ background: '#F8FAFC', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+            />
+          </div>
+
+          <button
+            onClick={handleSubmit}
+            disabled={submitting || (Number(reqAmperage) === amperage && reqType === subscriptionType)}
+            className="w-full h-11 rounded-xl text-white text-sm font-bold disabled:opacity-50 flex items-center justify-center gap-2"
+            style={{ background: 'linear-gradient(135deg, #7C3AED, #1B4FD8)' }}
+          >
+            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+            {submitting ? 'جاري الإرسال...' : 'إرسال الطلب'}
+          </button>
+        </div>
+      )}
     </div>
   )
 }
