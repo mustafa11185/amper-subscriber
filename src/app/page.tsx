@@ -88,15 +88,12 @@ export default function HomePage() {
     <div className="min-h-dvh flex flex-col items-center justify-center p-6" style={{ background: 'var(--bg-base)' }}>
       <div className="w-full max-w-[340px] space-y-8 text-center">
         {/* Logo */}
-        <div className="flex items-center justify-center gap-2">
-          <svg width="32" height="32" viewBox="0 0 32 32">
-            <polygon points="16,2 28,9 28,23 16,30 4,23 4,9" fill="#1A237E" />
-            <text x="16" y="21" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">⚡</text>
-          </svg>
-          <h1 className="text-2xl font-bold" style={{ color: '#0F172A', fontFamily: 'Rajdhani, sans-serif' }}>أمبير</h1>
+        <div className="flex flex-col items-center justify-center gap-3">
+          <span className="text-5xl">⚡</span>
+          <h1 className="text-3xl font-bold" style={{ color: '#0D1B2A', fontFamily: 'Rajdhani, sans-serif' }}>أمبير</h1>
         </div>
 
-        <p className="text-base font-bold" style={{ color: '#0F172A' }}>ادخل كودك</p>
+        <p className="text-base font-bold" style={{ color: '#0D1B2A' }}>ادخل كودك</p>
 
         {/* Code input */}
         <input
@@ -117,10 +114,10 @@ export default function HomePage() {
           style={{
             height: 56,
             fontSize: 22,
-            background: '#F8F9FB',
-            border: code ? '1.5px solid #1A237E' : '1.5px solid var(--border)',
-            color: '#111827',
-            caretColor: '#1A237E',
+            background: '#FFFFFF',
+            border: code ? '1.5px solid #1B4FD8' : '1.5px solid rgba(0,0,0,0.08)',
+            color: '#0D1B2A',
+            caretColor: '#1B4FD8',
           }}
         />
 
@@ -130,14 +127,14 @@ export default function HomePage() {
           onClick={handleSubmit}
           disabled={loading || cleanCode(code).length < 10}
           className="w-full h-14 rounded-xl text-white text-base font-bold disabled:opacity-50 flex items-center justify-center gap-2"
-          style={{ background: '#1A237E' }}
+          style={{ background: '#1B4FD8' }}
         >
           {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
           {loading ? 'جاري الدخول...' : 'دخول'}
         </button>
 
         <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>الكود موجود في رسالة واتساب من مولدتك</p>
-        <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>مدعوم من أمبير ⚡</p>
+        <p className="text-[10px]" style={{ color: '#9CA3AF' }}>مدعوم من أمبير ⚡</p>
       </div>
     </div>
   )

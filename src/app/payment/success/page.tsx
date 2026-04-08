@@ -21,33 +21,34 @@ function SuccessContent() {
   return (
     <div dir="rtl" style={{
       minHeight: '100dvh',
-      background: '#FFFFFF',
+      background: '#FAFAFA',
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
     }}>
       <div style={{
-        background: 'white', borderRadius: 16, padding: '40px 24px',
+        background: '#FFFFFF', borderRadius: 16, padding: '40px 24px',
         textAlign: 'center', maxWidth: 360, width: '100%',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
       }}>
         <div style={{
           width: 72, height: 72, borderRadius: '50%',
-          background: '#16A34A',
+          background: '#10B981',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           margin: '0 auto 16px', color: 'white', fontSize: 32, fontWeight: 700,
         }}>✓</div>
-        <h2 style={{ fontSize: 20, fontWeight: 700, color: '#111827', marginBottom: 8 }}>تم الدفع بنجاح!</h2>
+        <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0D1B2A', marginBottom: 8 }}>تم الدفع بنجاح!</h2>
         <p style={{ fontSize: 13, color: '#9CA3AF', marginBottom: 24 }}>تم تسجيل دفعتك بنجاح</p>
         {ref && (
-          <div style={{ background: '#F5F6F8', borderRadius: 12, padding: 10, marginBottom: 20 }}>
+          <div style={{ background: '#F5F5F5', borderRadius: 12, padding: 10, marginBottom: 20 }}>
             <p style={{ fontSize: 10, color: '#9CA3AF', marginBottom: 3 }}>رقم المعاملة</p>
-            <p style={{ fontSize: 12, fontWeight: 600, color: '#1A237E' }}>{ref}</p>
+            <p style={{ fontSize: 12, fontWeight: 600, color: '#0D1B2A' }}>{ref}</p>
           </div>
         )}
         <div style={{ background: '#F0FDF4', borderRadius: 12, padding: 12, marginBottom: 16 }}>
-          <p style={{ fontSize: 12, color: '#16A34A' }}>العودة خلال {countdown} ثوانٍ...</p>
+          <p style={{ fontSize: 12, color: '#10B981' }}>العودة خلال {countdown} ثوانٍ...</p>
         </div>
         <button onClick={() => router.push('/home')} style={{
           width: '100%', padding: 14, borderRadius: 12,
-          background: '#1A237E',
+          background: '#1B4FD8',
           color: 'white', border: 'none', fontSize: 14, fontWeight: 700, cursor: 'pointer',
         }}>العودة الآن</button>
       </div>

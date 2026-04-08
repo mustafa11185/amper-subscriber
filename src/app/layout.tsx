@@ -21,7 +21,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Rajdhani:wght@500;600;700&display=swap"
           rel="stylesheet"
         />
-        <meta name="theme-color" content="#FFFFFF" />
+        <meta name="theme-color" content="#FAFAFA" />
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
