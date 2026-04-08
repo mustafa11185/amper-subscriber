@@ -1,26 +1,26 @@
 @import "tailwindcss";
 
 :root {
-  /* Banking Premium */
-  --brand-primary: #0D1B2A;
-  --brand-light: #E8EDF2;
-  --brand-gradient: linear-gradient(135deg, #0D1B2A, #1B3A5C);
-  --bg-base: #FAFAFA;
+  /* Amper Blue */
+  --brand-primary: #1B4FD8;
+  --brand-light: #EBF0FF;
+  --brand-gradient: linear-gradient(135deg, #1B4FD8, #1557E8);
+  --bg-base: #F5F7FA;
   --bg-surface: #FFFFFF;
-  --bg-muted: #F5F5F5;
-  --bg-section: #F0F0F0;
+  --bg-muted: #F0F3F8;
+  --bg-section: #F0F3F8;
   --bg-glass: rgba(255,255,255,0.92);
-  --text-primary: #0D1B2A;
-  --text-secondary: #6B7280;
-  --text-muted: #9CA3AF;
-  --border: rgba(0,0,0,0.05);
+  --text-primary: #0F172A;
+  --text-secondary: #64748B;
+  --text-muted: #94A3B8;
+  --border: rgba(0,0,0,0.06);
   --border-strong: rgba(0,0,0,0.1);
-  --success: #10B981;
+  --success: #059669;
   --danger: #DC2626;
-  --warning: #F59E0B;
+  --warning: #D97706;
   --gold: #C8962E;
-  --shadow-card: 0 1px 2px rgba(0,0,0,0.03);
-  --shadow-button: 0 2px 6px rgba(13,27,42,0.15);
+  --shadow-card: 0 2px 8px rgba(15,23,42,0.06);
+  --shadow-button: 0 4px 12px rgba(27,79,216,0.25);
   --shadow-float: 0 8px 24px rgba(0,0,0,0.08);
 }
 
@@ -91,7 +91,7 @@ body {
 /* Clean bottom nav */
 .frosted-nav {
   background: #FFFFFF;
-  border-top: 1px solid #F0F0F0;
+  border-top: 1px solid rgba(0,0,0,0.06);
 }
 
 /* Glass effect */

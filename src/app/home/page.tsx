@@ -93,13 +93,13 @@ export default function SubscriberHomePage() {
 
   if (loading || !data) {
     return (
-      <div className="flex items-center justify-center min-h-dvh" style={{ background: 'var(--bg-base)' }}>
-        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#0D1B2A' }} />
+      <div className="flex items-center justify-center min-h-dvh" style={{ background: '#F5F7FA' }}>
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#1B4FD8' }} />
       </div>
     )
   }
 
-  const brandColor = data.settings.primary_color || '#0D1B2A'
+  const brandColor = data.settings.primary_color || '#1B4FD8'
   const inv = data.current_invoice
   const invoiceDue = inv ? inv.total_amount_due - inv.amount_paid : 0
   const hasPayment = data.settings.furatpay_enabled || data.settings.active_gateway === 'aps'
@@ -214,15 +214,23 @@ export default function SubscriberHomePage() {
   return (
     <>
       <Toaster position="top-center" />
-      <div className="flex-1 pb-20" style={{ background: 'var(--bg-base)', color: 'var(--text-primary)' }}>
+      <div className="flex-1 pb-20" style={{ background: '#F5F7FA', color: '#0F172A' }}>
         {/* Header */}
-        <div className="p-4 flex items-center justify-between">
-          <button onClick={logout} className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#F5F5F5' }}>
-            <LogOut className="w-4 h-4" style={{ color: '#0D1B2A' }} />
-          </button>
-          <div className="text-right">
-            <p className="text-sm font-bold" style={{ color: '#0D1B2A' }}>أهلاً {data.name} 👋</p>
-            <p className="text-[10px]" style={{ color: '#9CA3AF' }}>{data.branch_name}</p>
+        <div style={{
+          background: 'linear-gradient(135deg, #1B4FD8, #1557E8)',
+          padding: '20px 16px 24px',
+          color: 'white',
+          position: 'relative',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <button onClick={logout} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: 12, padding: '8px 12px', color: 'white', cursor: 'pointer' }}>
+              <LogOut size={18} />
+            </button>
+            <div>
+              <div style={{ fontSize: 13, opacity: 0.8 }}>أهلاً بك 👋</div>
+              <div style={{ fontSize: 20, fontWeight: 900, marginTop: 2 }}>{data.name}</div>
+              <div style={{ fontSize: 12, opacity: 0.7, marginTop: 2 }}>{data.branch_name}</div>
+            </div>
           </div>
         </div>
 
@@ -247,8 +255,8 @@ export default function SubscriberHomePage() {
                     <p className="text-xs font-bold flex items-center justify-end gap-1" style={{ color: '#DC2626' }}>
                       <span>فاتورة {invMonthName} غير مدفوعة</span>
                     </p>
-                    <p className="font-num text-lg font-bold mt-0.5" style={{ color: '#0D1B2A' }}>
-                      {fmt(invoiceDue)} <span className="text-[10px]" style={{ color: '#9CA3AF' }}>د.ع</span>
+                    <p className="font-num text-lg font-bold mt-0.5" style={{ color: '#0F172A' }}>
+                      {fmt(invoiceDue)} <span className="text-[10px]" style={{ color: '#94A3B8' }}>د.ع</span>
                     </p>
                   </div>
                 </div>
@@ -260,13 +268,13 @@ export default function SubscriberHomePage() {
                   <div className="flex items-center gap-3">
                     {(data.generator_status.gold_hours_today != null || data.generator_status.normal_hours_today != null) && (
                       <>
-                        <span className="text-[10px]" style={{ color: '#9CA3AF' }}>{data.generator_status.gold_hours_today ?? 0}h ذهبي</span>
-                        <span className="text-[10px]" style={{ color: '#9CA3AF' }}>{data.generator_status.normal_hours_today ?? 0}h عادي</span>
+                        <span className="text-[10px]" style={{ color: '#94A3B8' }}>{data.generator_status.gold_hours_today ?? 0}h ذهبي</span>
+                        <span className="text-[10px]" style={{ color: '#94A3B8' }}>{data.generator_status.normal_hours_today ?? 0}h عادي</span>
                       </>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs" style={{ color: '#6B7280' }}>{data.generator_status.name}</span>
+                    <span className="text-xs" style={{ color: '#64748B' }}>{data.generator_status.name}</span>
                     <span className="text-[10px]" style={{ color: data.generator_status.run_status ? '#16A34A' : '#DC2626' }}>{data.generator_status.run_status ? 'تعمل' : 'متوقفة'}</span>
                     <div className={`w-2 h-2 rounded-full ${data.generator_status.run_status ? 'pulse-green' : 'pulse-dot-red'}`} style={{ background: data.generator_status.run_status ? '#16A34A' : '#DC2626' }} />
                   </div>
@@ -274,12 +282,12 @@ export default function SubscriberHomePage() {
               )}
 
               {/* Invoice amount */}
-              <div className="py-6 text-center">
-                <p className="text-sm mb-3" style={{ color: '#9CA3AF' }}>المبلغ المستحق</p>
-                <p className="font-num text-5xl font-black" style={{ color: '#0D1B2A' }}>{fmt(invoiceDue)}<span className="text-sm mr-1 font-normal" style={{ color: '#9CA3AF' }}>د.ع</span></p>
-                <p className="text-xs mt-1" style={{ color: '#9CA3AF' }}>دينار عراقي</p>
+              <div className="py-6 text-center rounded-2xl" style={{ background: '#FFFFFF', boxShadow: '0 2px 8px rgba(15,23,42,0.06)', padding: '24px 16px' }}>
+                <p className="text-sm mb-3" style={{ color: '#94A3B8' }}>المبلغ المستحق</p>
+                <p className="font-num text-5xl font-black" style={{ color: '#0F172A' }}>{fmt(invoiceDue)}<span className="text-sm mr-1 font-normal" style={{ color: '#94A3B8' }}>د.ع</span></p>
+                <p className="text-xs mt-1" style={{ color: '#94A3B8' }}>دينار عراقي</p>
                 {inv && (
-                  <p className="text-xs mt-2" style={{ color: '#6B7280' }}>
+                  <p className="text-xs mt-2" style={{ color: '#64748B' }}>
                     {formatBillingMonth(inv.billing_month, inv.billing_year)} — {data.amperage} أمبير
                   </p>
                 )}
@@ -314,16 +322,16 @@ export default function SubscriberHomePage() {
               {/* Feature 7: Payment history link */}
               <button
                 onClick={() => router.push('/history')}
-                className="w-full rounded-xl p-4 flex items-center justify-between"
-                style={{ background: '#F5F5F5' }}
+                className="w-full rounded-2xl p-4 flex items-center justify-between"
+                style={{ background: '#FFFFFF', boxShadow: '0 2px 8px rgba(15,23,42,0.06)' }}
               >
-                <ArrowLeft className="w-4 h-4" style={{ color: '#9CA3AF' }} />
+                <ArrowLeft className="w-4 h-4" style={{ color: '#94A3B8' }} />
                 <div className="flex items-center gap-2">
                   <div>
-                    <p className="text-sm font-bold text-right" style={{ color: '#0D1B2A' }}>سجل الدفعات</p>
-                    <p className="text-[10px] text-right" style={{ color: '#9CA3AF' }}>عرض جميع الدفعات السابقة</p>
+                    <p className="text-sm font-bold text-right" style={{ color: '#0F172A' }}>سجل الدفعات</p>
+                    <p className="text-[10px] text-right" style={{ color: '#94A3B8' }}>عرض جميع الدفعات السابقة</p>
                   </div>
-                  <History className="w-5 h-5" style={{ color: '#0D1B2A' }} />
+                  <History className="w-5 h-5" style={{ color: '#1B4FD8' }} />
                 </div>
               </button>
 
@@ -358,7 +366,7 @@ export default function SubscriberHomePage() {
               ) : (
                 <div className="space-y-3">
                   {/* Amount card */}
-                  <div className="rounded-xl overflow-hidden" style={{ background: '#0D1B2A' }}>
+                  <div className="rounded-xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #1B4FD8, #1557E8)' }}>
                     <div className="p-5 text-center">
                       <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>المبلغ المستحق</p>
                       <p className="font-num text-4xl font-bold" style={{ color: '#FFFFFF' }}>{fmt(totalDue)}<span className="text-sm mr-1" style={{ color: 'rgba(255,255,255,0.5)' }}>د.ع</span></p>
@@ -381,7 +389,7 @@ export default function SubscriberHomePage() {
                   <button onClick={() => { setPayMethod('qi_card'); setShowCardSheet(true) }}
                     className="w-full rounded-xl p-3 flex items-center justify-between"
                     style={{ background: '#FFFFFF', border: '1.5px solid rgba(0,0,0,0.08)' }}>
-                    <span style={{ color: '#0D1B2A' }}>&#x203A;</span>
+                    <span style={{ color: '#0F172A' }}>&#x203A;</span>
                     <div className="flex items-center gap-2">
                       <div className="text-right">
                         <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>كي كارد / ماستركارد</p>
@@ -436,19 +444,19 @@ export default function SubscriberHomePage() {
             <div className="space-y-3">
               <h2 className="text-lg font-bold">سجل الفواتير</h2>
               {data.invoices_history.length === 0 ? (
-                <p className="text-center text-xs py-8" style={{ color: '#9CA3AF' }}>لا توجد فواتير</p>
+                <p className="text-center text-xs py-8" style={{ color: '#94A3B8' }}>لا توجد فواتير</p>
               ) : data.invoices_history.map((inv, i) => (
                 <div key={inv.id} className="py-3 flex items-center justify-between" style={{ borderBottom: i < data.invoices_history.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
                   <div className="flex items-center gap-2">
-                    <span className="font-num text-lg font-bold" style={{ color: '#0D1B2A' }}>{fmt(inv.total_amount_due)}</span>
-                    <span className="text-[10px]" style={{ color: '#9CA3AF' }}>د.ع</span>
+                    <span className="font-num text-lg font-bold" style={{ color: '#0F172A' }}>{fmt(inv.total_amount_due)}</span>
+                    <span className="text-[10px]" style={{ color: '#94A3B8' }}>د.ع</span>
                     {inv.is_fully_paid ? (
                       <CheckCircle2 className="w-3.5 h-3.5" style={{ color: '#16A34A' }} />
                     ) : (
                       <Clock className="w-3.5 h-3.5" style={{ color: '#DC2626' }} />
                     )}
                   </div>
-                  <p className="text-sm font-bold" style={{ color: '#0D1B2A' }}>{formatBillingMonth(inv.billing_month, inv.billing_year)}</p>
+                  <p className="text-sm font-bold" style={{ color: '#0F172A' }}>{formatBillingMonth(inv.billing_month, inv.billing_year)}</p>
                 </div>
               ))}
             </div>
@@ -603,7 +611,7 @@ export default function SubscriberHomePage() {
                   <p className="text-[11px] mb-1" style={{ color: 'var(--text-muted)' }}>رقم محفظة ZainCash</p>
                   <p className="font-bold text-lg tracking-widest" style={{ color: '#009944' }}>{zainData.merchant_phone}</p>
                   <button onClick={() => { navigator.clipboard.writeText(zainData.merchant_phone!); toast.success('تم نسخ الرقم') }}
-                    className="text-[11px] mt-1" style={{ color: '#0D1B2A' }}>📋 نسخ الرقم</button>
+                    className="text-[11px] mt-1" style={{ color: '#0F172A' }}>📋 نسخ الرقم</button>
                 </div>
               )}
             </div>
@@ -611,7 +619,7 @@ export default function SubscriberHomePage() {
         )}
 
         {/* Bottom nav */}
-        <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ background: '#FFFFFF', borderTop: '1px solid #F0F0F0' }}>
+        <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ background: '#FFFFFF', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
           <div className="max-w-[390px] mx-auto flex items-center justify-around h-16 pb-[env(safe-area-inset-bottom)]">
             {tabs.map(t => {
               const isActive = tab === t.key
@@ -619,14 +627,14 @@ export default function SubscriberHomePage() {
               return (
                 <button key={t.key} onClick={() => onTabClick(t.key)} className="flex flex-col items-center gap-1 py-2 px-3">
                   <span className="relative inline-block">
-                    <Icon className="w-5 h-5" style={{ color: isActive ? '#0D1B2A' : '#9CA3AF' }} />
+                    <Icon className="w-5 h-5" style={{ color: isActive ? '#1B4FD8' : '#94A3B8' }} />
                     {t.key === 'alerts' && unreadCount > 0 && (
                       <span className="absolute -top-1.5 -right-2 flex items-center justify-center rounded-full text-white font-bold" style={{ background: '#DC2626', minWidth: '16px', height: '16px', fontSize: '9px', padding: '0 4px' }}>
                         {unreadCount > 9 ? '9+' : unreadCount}
                       </span>
                     )}
                   </span>
-                  <span className="text-[10px]" style={{ color: isActive ? '#0D1B2A' : '#9CA3AF', fontWeight: isActive ? 700 : 400 }}>{t.label}</span>
+                  <span className="text-[10px]" style={{ color: isActive ? '#1B4FD8' : '#94A3B8', fontWeight: isActive ? 700 : 400 }}>{t.label}</span>
                 </button>
               )
             })}
@@ -648,11 +656,11 @@ function UpsellCard() {
   return (
     <div className="rounded-xl p-4" style={{ background: '#FFFBEB', borderRight: '3px solid #D97706' }}>
       <div className="flex items-start justify-between mb-2">
-        <button onClick={() => setShow(false)} className="text-xs" style={{ color: '#9CA3AF' }}>✕</button>
+        <button onClick={() => setShow(false)} className="text-xs" style={{ color: '#94A3B8' }}>✕</button>
         <span className="text-base">⭐</span>
       </div>
-      <p className="text-sm font-bold mb-1 text-right" style={{ color: '#0D1B2A' }}>هل تعلم؟</p>
-      <p className="text-xs leading-relaxed text-right" style={{ color: '#6B7280' }}>مشتركو الذهبي يحصلون على ساعات أكثر — تحدث مع صاحب المولدة للترقية</p>
+      <p className="text-sm font-bold mb-1 text-right" style={{ color: '#0F172A' }}>هل تعلم؟</p>
+      <p className="text-xs leading-relaxed text-right" style={{ color: '#64748B' }}>مشتركو الذهبي يحصلون على ساعات أكثر — تحدث مع صاحب المولدة للترقية</p>
     </div>
   )
 }
@@ -906,13 +914,13 @@ function InstallBanner() {
     <div className="fixed bottom-20 left-4 right-4 z-40 max-w-[358px] mx-auto">
       <div className="rounded-2xl p-4" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', boxShadow: '0 8px 30px rgba(0,0,0,0.1)' }}>
         <div className="flex items-start justify-between mb-2">
-          <p className="text-xs font-bold" style={{ color: '#0D1B2A' }}>أضف التطبيق لشاشتك الرئيسية</p>
+          <p className="text-xs font-bold" style={{ color: '#0F172A' }}>أضف التطبيق لشاشتك الرئيسية</p>
           <button onClick={() => { setShow(false); localStorage.setItem('pwa_dismissed', 'true') }}
             className="text-xs" style={{ color: 'var(--text-muted)' }}>✕</button>
         </div>
         {isIOS ? (
           <p className="text-[10px] mb-2" style={{ color: '#94A3B8' }}>
-            اضغط <span style={{ color: '#0D1B2A' }}>مشاركة ↗</span> ثم <span style={{ color: '#0D1B2A' }}>إضافة للشاشة الرئيسية</span>
+            اضغط <span style={{ color: '#0F172A' }}>مشاركة ↗</span> ثم <span style={{ color: '#0F172A' }}>إضافة للشاشة الرئيسية</span>
           </p>
         ) : (
           <button onClick={async () => {
