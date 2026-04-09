@@ -93,7 +93,7 @@ export default function SubscriberHomePage() {
 
   if (loading || !data) {
     return (
-      <div className="flex items-center justify-center min-h-dvh" style={{ background: '#F5F7FA' }}>
+      <div className="flex items-center justify-center min-h-dvh" style={{ background: '#F0F4FF' }}>
         <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#1B4FD8' }} />
       </div>
     )
@@ -214,10 +214,10 @@ export default function SubscriberHomePage() {
   return (
     <>
       <Toaster position="top-center" />
-      <div className="flex-1 pb-20" style={{ background: '#F5F7FA', color: '#0F172A' }}>
+      <div className="flex-1 pb-20" style={{ background: '#F0F4FF', color: '#0F172A' }}>
         {/* Header */}
         <div style={{
-          background: 'linear-gradient(135deg, #1B4FD8, #1557E8)',
+          background: 'linear-gradient(135deg, #1B4FD8, #2563EB)',
           padding: '20px 16px 24px',
           color: 'white',
           position: 'relative',
@@ -226,11 +226,11 @@ export default function SubscriberHomePage() {
             <button onClick={logout} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: 12, padding: '8px 12px', color: 'white', cursor: 'pointer' }}>
               <LogOut size={18} />
             </button>
-            <div>
-              <div style={{ fontSize: 13, opacity: 0.8 }}>أهلاً بك 👋</div>
-              <div style={{ fontSize: 20, fontWeight: 900, marginTop: 2 }}>{data.name}</div>
+            <div style={{ textAlign: 'center', flex: 1 }}>
+              <div style={{ fontSize: 20, fontWeight: 900 }}>{data.name}</div>
               <div style={{ fontSize: 12, opacity: 0.7, marginTop: 2 }}>{data.branch_name}</div>
             </div>
+            <div style={{ width: 42 }} />
           </div>
         </div>
 
@@ -241,7 +241,7 @@ export default function SubscriberHomePage() {
               {inv && !inv.is_fully_paid && (
                 <div
                   className="rounded-xl p-4 flex items-center justify-between animate-fade-in"
-                  style={{ background: '#FEF2F2', borderRight: '3px solid #DC2626', boxShadow: 'none' }}
+                  style={{ background: '#FEF2F2', borderRight: '3px solid #C62828', boxShadow: 'none' }}
                 >
                   <button
                     onClick={() => setTab('pay')}
@@ -252,7 +252,7 @@ export default function SubscriberHomePage() {
                     <ArrowLeft className="w-3 h-3" />
                   </button>
                   <div className="text-right">
-                    <p className="text-xs font-bold flex items-center justify-end gap-1" style={{ color: '#DC2626' }}>
+                    <p className="text-xs font-bold flex items-center justify-end gap-1" style={{ color: '#C62828' }}>
                       <span>فاتورة {invMonthName} غير مدفوعة</span>
                     </p>
                     <p className="font-num text-lg font-bold mt-0.5" style={{ color: '#0F172A' }}>
@@ -274,20 +274,20 @@ export default function SubscriberHomePage() {
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs" style={{ color: '#64748B' }}>{data.generator_status.name}</span>
-                    <span className="text-[10px]" style={{ color: data.generator_status.run_status ? '#16A34A' : '#DC2626' }}>{data.generator_status.run_status ? 'تعمل' : 'متوقفة'}</span>
-                    <div className={`w-2 h-2 rounded-full ${data.generator_status.run_status ? 'pulse-green' : 'pulse-dot-red'}`} style={{ background: data.generator_status.run_status ? '#16A34A' : '#DC2626' }} />
+                    <span className="text-xs" style={{ color: '#8E8E93' }}>{data.generator_status.name}</span>
+                    <span className="text-[10px]" style={{ color: data.generator_status.run_status ? '#2E7D32' : '#C62828' }}>{data.generator_status.run_status ? 'تعمل' : 'متوقفة'}</span>
+                    <div className={`w-2 h-2 rounded-full ${data.generator_status.run_status ? 'pulse-green' : 'pulse-dot-red'}`} style={{ background: data.generator_status.run_status ? '#2E7D32' : '#C62828' }} />
                   </div>
                 </div>
               )}
 
               {/* Invoice amount */}
-              <div className="py-6 text-center rounded-2xl" style={{ background: '#FFFFFF', boxShadow: '0 2px 8px rgba(15,23,42,0.06)', padding: '24px 16px' }}>
-                <p className="text-sm mb-3" style={{ color: '#94A3B8' }}>المبلغ المستحق</p>
-                <p className="font-num text-5xl font-black" style={{ color: '#0F172A' }}>{fmt(invoiceDue)}<span className="text-sm mr-1 font-normal" style={{ color: '#94A3B8' }}>د.ع</span></p>
-                <p className="text-xs mt-1" style={{ color: '#94A3B8' }}>دينار عراقي</p>
+              <div className="text-center" style={{ background: '#FFFFFF', boxShadow: '0 2px 8px rgba(15,23,42,0.06)', padding: '24px 16px', borderRadius: 16 }}>
+                <p className="text-sm mb-3" style={{ color: '#8E8E93' }}>المبلغ المستحق</p>
+                <p className="font-num text-4xl font-black" style={{ color: '#0F172A' }}>{fmt(invoiceDue)}<span className="text-sm mr-1 font-normal" style={{ color: '#8E8E93' }}>د.ع</span></p>
+                <p className="text-xs mt-1" style={{ color: '#8E8E93' }}>دينار عراقي</p>
                 {inv && (
-                  <p className="text-xs mt-2" style={{ color: '#64748B' }}>
+                  <p className="text-xs mt-2" style={{ color: '#8E8E93' }}>
                     {formatBillingMonth(inv.billing_month, inv.billing_year)} — {data.amperage} أمبير
                   </p>
                 )}
@@ -295,8 +295,8 @@ export default function SubscriberHomePage() {
                 {inv && !inv.is_fully_paid && hasPayment && (
                   <button
                     onClick={() => setTab('pay')}
-                    className="w-full rounded-xl text-white text-sm font-bold mt-6"
-                    style={{ background: '#1B4FD8', height: 52 }}
+                    className="w-full text-white text-sm font-bold mt-6"
+                    style={{ background: '#1B4FD8', height: 52, borderRadius: 14 }}
                   >
                     ادفع الآن
                   </button>
@@ -366,7 +366,7 @@ export default function SubscriberHomePage() {
               ) : (
                 <div className="space-y-3">
                   {/* Amount card */}
-                  <div className="rounded-xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #1B4FD8, #1557E8)' }}>
+                  <div className="overflow-hidden" style={{ background: 'linear-gradient(135deg, #1B4FD8, #2563EB)', borderRadius: 16 }}>
                     <div className="p-5 text-center">
                       <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>المبلغ المستحق</p>
                       <p className="font-num text-4xl font-bold" style={{ color: '#FFFFFF' }}>{fmt(totalDue)}<span className="text-sm mr-1" style={{ color: 'rgba(255,255,255,0.5)' }}>د.ع</span></p>
@@ -453,7 +453,7 @@ export default function SubscriberHomePage() {
                     {inv.is_fully_paid ? (
                       <CheckCircle2 className="w-3.5 h-3.5" style={{ color: '#16A34A' }} />
                     ) : (
-                      <Clock className="w-3.5 h-3.5" style={{ color: '#DC2626' }} />
+                      <Clock className="w-3.5 h-3.5" style={{ color: '#C62828' }} />
                     )}
                   </div>
                   <p className="text-sm font-bold" style={{ color: '#0F172A' }}>{formatBillingMonth(inv.billing_month, inv.billing_year)}</p>
@@ -627,14 +627,14 @@ export default function SubscriberHomePage() {
               return (
                 <button key={t.key} onClick={() => onTabClick(t.key)} className="flex flex-col items-center gap-1 py-2 px-3">
                   <span className="relative inline-block">
-                    <Icon className="w-5 h-5" style={{ color: isActive ? '#1B4FD8' : '#94A3B8' }} />
+                    <Icon className="w-5 h-5" style={{ color: isActive ? '#1B4FD8' : '#8E8E93' }} />
                     {t.key === 'alerts' && unreadCount > 0 && (
-                      <span className="absolute -top-1.5 -right-2 flex items-center justify-center rounded-full text-white font-bold" style={{ background: '#DC2626', minWidth: '16px', height: '16px', fontSize: '9px', padding: '0 4px' }}>
+                      <span className="absolute -top-1.5 -right-2 flex items-center justify-center rounded-full text-white font-bold" style={{ background: '#C62828', minWidth: '16px', height: '16px', fontSize: '9px', padding: '0 4px' }}>
                         {unreadCount > 9 ? '9+' : unreadCount}
                       </span>
                     )}
                   </span>
-                  <span className="text-[10px]" style={{ color: isActive ? '#1B4FD8' : '#94A3B8', fontWeight: isActive ? 700 : 400 }}>{t.label}</span>
+                  <span className="text-[10px]" style={{ color: isActive ? '#1B4FD8' : '#8E8E93', fontWeight: isActive ? 700 : 400 }}>{t.label}</span>
                 </button>
               )
             })}
@@ -654,13 +654,13 @@ function UpsellCard() {
   if (!show) return null
 
   return (
-    <div className="rounded-xl p-4" style={{ background: '#FFFBEB', borderRight: '3px solid #D97706' }}>
+    <div className="rounded-xl p-4" style={{ background: '#FFFBEB', borderRight: '3px solid #FF9500' }}>
       <div className="flex items-start justify-between mb-2">
         <button onClick={() => setShow(false)} className="text-xs" style={{ color: '#94A3B8' }}>✕</button>
         <span className="text-base">⭐</span>
       </div>
       <p className="text-sm font-bold mb-1 text-right" style={{ color: '#0F172A' }}>هل تعلم؟</p>
-      <p className="text-xs leading-relaxed text-right" style={{ color: '#64748B' }}>مشتركو الذهبي يحصلون على ساعات أكثر — تحدث مع صاحب المولدة للترقية</p>
+      <p className="text-xs leading-relaxed text-right" style={{ color: '#8E8E93' }}>مشتركو الذهبي يحصلون على ساعات أكثر — تحدث مع صاحب المولدة للترقية</p>
     </div>
   )
 }
@@ -705,7 +705,7 @@ function RatingCard({ subscriberId }: { subscriberId: string }) {
     return (
       <div className="rounded-2xl p-5 text-center" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
         <p className="text-2xl mb-2">⭐</p>
-        <p className="text-sm font-bold" style={{ color: '#059669' }}>شكراً لتقييمك!</p>
+        <p className="text-sm font-bold" style={{ color: '#2E7D32' }}>شكراً لتقييمك!</p>
         <p className="text-[10px] mt-1" style={{ color: 'var(--text-muted)' }}>يساعدنا تقييمك على تحسين الخدمة</p>
       </div>
     )
@@ -714,7 +714,7 @@ function RatingCard({ subscriberId }: { subscriberId: string }) {
   return (
     <div className="rounded-2xl p-4" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
       <div className="flex items-center gap-2 mb-3">
-        <Star className="w-5 h-5" style={{ color: '#D97706' }} />
+        <Star className="w-5 h-5" style={{ color: '#FF9500' }} />
         <p className="text-sm font-bold">قيّم الخدمة</p>
       </div>
 
@@ -803,7 +803,7 @@ function ChangeRequestCard({ amperage, subscriptionType }: { amperage: number; s
     return (
       <div className="rounded-2xl p-5 text-center" style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-card)' }}>
         <p className="text-2xl mb-2">⚡</p>
-        <p className="text-sm font-bold" style={{ color: '#059669' }}>تم إرسال طلبك</p>
+        <p className="text-sm font-bold" style={{ color: '#2E7D32' }}>تم إرسال طلبك</p>
         <p className="text-[10px] mt-1" style={{ color: 'var(--text-muted)' }}>سيتواصل معك المدير قريباً</p>
       </div>
     )

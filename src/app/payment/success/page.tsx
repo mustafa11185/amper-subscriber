@@ -21,7 +21,7 @@ function SuccessContent() {
   return (
     <div dir="rtl" style={{
       minHeight: '100dvh',
-      background: '#F5F7FA',
+      background: '#F0F4FF',
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
     }}>
       <div style={{
@@ -31,26 +31,25 @@ function SuccessContent() {
       }}>
         <div style={{
           width: 72, height: 72, borderRadius: '50%',
-          background: '#059669',
+          background: '#2E7D32',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           margin: '0 auto 16px', color: 'white', fontSize: 32, fontWeight: 700,
         }}>✓</div>
         <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', marginBottom: 8 }}>تم الدفع بنجاح!</h2>
         <p style={{ fontSize: 13, color: '#94A3B8', marginBottom: 24 }}>تم تسجيل دفعتك بنجاح</p>
         {ref && (
-          <div style={{ background: '#F0F3F8', borderRadius: 12, padding: 10, marginBottom: 20 }}>
+          <div style={{ background: '#F8F9FF', borderRadius: 12, padding: 10, marginBottom: 20 }}>
             <p style={{ fontSize: 10, color: '#94A3B8', marginBottom: 3 }}>رقم المعاملة</p>
             <p style={{ fontSize: 12, fontWeight: 600, color: '#0F172A' }}>{ref}</p>
           </div>
         )}
         <div style={{ background: '#F0FDF4', borderRadius: 12, padding: 12, marginBottom: 16 }}>
-          <p style={{ fontSize: 12, color: '#059669' }}>العودة خلال {countdown} ثوانٍ...</p>
+          <p style={{ fontSize: 12, color: '#2E7D32' }}>العودة خلال {countdown} ثوانٍ...</p>
         </div>
         <button onClick={() => router.push('/home')} style={{
-          width: '100%', padding: 14, borderRadius: 12,
+          width: '100%', padding: 14, borderRadius: 14,
           background: '#1B4FD8',
           color: 'white', border: 'none', fontSize: 14, fontWeight: 700, cursor: 'pointer',
-          boxShadow: '0 4px 12px rgba(27,79,216,0.25)',
         }}>العودة الآن</button>
       </div>
     </div>

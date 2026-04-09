@@ -1,23 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  /* Amper Blue */
+  /* Amper Blue — matched to manager app */
   --brand-primary: #1B4FD8;
   --brand-light: #EBF0FF;
-  --brand-gradient: linear-gradient(135deg, #1B4FD8, #1557E8);
-  --bg-base: #F5F7FA;
+  --brand-gradient: linear-gradient(135deg, #1B4FD8, #2563EB);
+  --bg-base: #F0F4FF;
   --bg-surface: #FFFFFF;
-  --bg-muted: #F0F3F8;
-  --bg-section: #F0F3F8;
+  --bg-muted: #F8F9FF;
+  --bg-section: #F8F9FF;
   --bg-glass: rgba(255,255,255,0.92);
   --text-primary: #0F172A;
-  --text-secondary: #64748B;
+  --text-secondary: #8E8E93;
   --text-muted: #94A3B8;
   --border: rgba(0,0,0,0.06);
   --border-strong: rgba(0,0,0,0.1);
-  --success: #059669;
-  --danger: #DC2626;
-  --warning: #D97706;
+  --success: #2E7D32;
+  --danger: #C62828;
+  --warning: #FF9500;
   --gold: #C8962E;
   --shadow-card: 0 2px 8px rgba(15,23,42,0.06);
   --shadow-button: 0 4px 12px rgba(27,79,216,0.25);
@@ -32,7 +32,7 @@
 body {
   background: var(--bg-base);
   color: var(--text-primary);
-  font-family: 'Tajawal', sans-serif;
+  font-family: 'Cairo', 'Tajawal', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -56,8 +56,8 @@ body {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(22,163,74,0.3); }
-  50% { box-shadow: 0 0 0 6px rgba(22,163,74,0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(46,125,50,0.3); }
+  50% { box-shadow: 0 0 0 6px rgba(46,125,50,0); }
 }
 
 @keyframes pulse-dot {

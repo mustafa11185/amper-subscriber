@@ -42,7 +42,7 @@ function methodLabel(method: string): string {
 }
 
 function methodIcon(method: string) {
-  if (method === 'cash') return <Banknote className="w-4 h-4" style={{ color: '#059669' }} />
+  if (method === 'cash') return <Banknote className="w-4 h-4" style={{ color: '#2E7D32' }} />
   return <CreditCard className="w-4 h-4" style={{ color: '#0F172A' }} />
 }
 
@@ -77,7 +77,7 @@ export default function PaymentHistoryPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-dvh" style={{ background: '#F5F7FA' }}>
+      <div className="flex items-center justify-center min-h-dvh" style={{ background: '#F0F4FF' }}>
         <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#1B4FD8' }} />
       </div>
     )
@@ -122,13 +122,13 @@ export default function PaymentHistoryPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 {methodIcon(p.payment_method)}
-                <span className="text-[11px] font-medium" style={{ color: p.payment_method === 'cash' ? '#059669' : '#0F172A' }}>
+                <span className="text-[11px] font-medium" style={{ color: p.payment_method === 'cash' ? '#2E7D32' : '#0F172A' }}>
                   {methodLabel(p.payment_method)}
                 </span>
                 {p.is_fully_paid ? (
                   <CheckCircle2 className="w-3.5 h-3.5" style={{ color: '#16A34A' }} />
                 ) : (
-                  <Clock className="w-3.5 h-3.5" style={{ color: '#D97706' }} />
+                  <Clock className="w-3.5 h-3.5" style={{ color: '#FF9500' }} />
                 )}
               </div>
               <div>
@@ -142,7 +142,7 @@ export default function PaymentHistoryPage() {
             <div className="flex items-center justify-between mt-1.5">
               <div>
                 {!p.is_fully_paid && (
-                  <p className="text-[10px]" style={{ color: '#D97706' }}>
+                  <p className="text-[10px]" style={{ color: '#FF9500' }}>
                     من أصل {fmt(p.total_amount_due)} د.ع
                   </p>
                 )}

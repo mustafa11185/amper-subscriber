@@ -85,59 +85,70 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center p-6" style={{ background: '#F5F7FA' }}>
-      <div className="w-full max-w-[340px] space-y-8 text-center">
-        {/* Logo */}
-        <div className="flex flex-col items-center justify-center gap-3">
-          <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg, #1B4FD8, #1557E8)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span className="text-3xl" style={{ color: 'white' }}>⚡</span>
-          </div>
-          <h1 className="text-3xl font-bold" style={{ color: '#0F172A', fontFamily: 'Rajdhani, sans-serif' }}>أمبير</h1>
+    <div className="min-h-dvh flex flex-col" style={{ background: '#FFFFFF' }}>
+      {/* Top gradient section */}
+      <div style={{
+        background: 'linear-gradient(135deg, #1B4FD8, #2563EB)',
+        padding: '60px 24px 48px',
+        textAlign: 'center',
+        color: 'white',
+        borderRadius: '0 0 32px 32px',
+      }}>
+        <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+          <span className="text-3xl">⚡</span>
         </div>
+        <h1 className="text-3xl font-bold" style={{ fontFamily: 'Rajdhani, sans-serif' }}>أمبير</h1>
+        <p className="text-sm mt-2" style={{ opacity: 0.7 }}>نظام إدارة المولدات الذكي</p>
+      </div>
 
-        <p className="text-base font-bold" style={{ color: '#0F172A' }}>ادخل كودك</p>
+      {/* Bottom white section with form */}
+      <div className="flex-1 flex flex-col items-center justify-center p-6">
+        <div className="w-full max-w-[340px] space-y-6 text-center">
+          <p className="text-base font-bold" style={{ color: '#0F172A' }}>ادخل كودك</p>
 
-        {/* Code input */}
-        <input
-          ref={inputRef}
-          type="text"
-          inputMode="text"
-          value={code}
-          onChange={e => handleChange(e.target.value)}
-          onPaste={handlePaste}
-          onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-          placeholder="BG-05-001-482"
-          dir="ltr"
-          autoFocus
-          autoComplete="off"
-          autoCorrect="off"
-          spellCheck={false}
-          className="w-full rounded-xl text-center font-mono font-bold outline-none tracking-wider"
-          style={{
-            height: 56,
-            fontSize: 22,
-            background: '#FFFFFF',
-            border: code ? '1.5px solid #1B4FD8' : '1.5px solid rgba(0,0,0,0.06)',
-            color: '#0F172A',
-            caretColor: '#1B4FD8',
-            boxShadow: '0 2px 8px rgba(15,23,42,0.06)',
-          }}
-        />
+          {/* Code input */}
+          <input
+            ref={inputRef}
+            type="text"
+            inputMode="text"
+            value={code}
+            onChange={e => handleChange(e.target.value)}
+            onPaste={handlePaste}
+            onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+            placeholder="BG-05-001-482"
+            dir="ltr"
+            autoFocus
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
+            className="w-full text-center font-mono font-bold outline-none tracking-wider"
+            style={{
+              height: 56,
+              fontSize: 22,
+              background: '#F8F9FF',
+              border: code ? '1.5px solid #1B4FD8' : '1.5px solid rgba(0,0,0,0.06)',
+              borderRadius: 14,
+              color: '#0F172A',
+              caretColor: '#1B4FD8',
+              boxShadow: '0 2px 8px rgba(15,23,42,0.06)',
+            }}
+          />
 
-        {error && <p className="text-xs font-bold" style={{ color: '#EF4444' }}>{error}</p>}
+          {error && <p className="text-xs font-bold" style={{ color: '#C62828' }}>{error}</p>}
 
-        <button
-          onClick={handleSubmit}
-          disabled={loading || cleanCode(code).length < 10}
-          className="w-full h-14 rounded-xl text-white text-base font-bold disabled:opacity-50 flex items-center justify-center gap-2"
-          style={{ background: '#1B4FD8', boxShadow: '0 4px 12px rgba(27,79,216,0.25)' }}
-        >
-          {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
-          {loading ? 'جاري الدخول...' : 'دخول'}
-        </button>
+          <button
+            onClick={handleSubmit}
+            disabled={loading || cleanCode(code).length < 10}
+            className="w-full h-14 text-white text-base font-bold disabled:opacity-50 flex items-center justify-center gap-2"
+            style={{ background: '#1B4FD8', borderRadius: 14 }}
+          >
+            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
+            {loading ? 'جاري الدخول...' : 'دخول'}
+          </button>
 
-        <p className="text-xs" style={{ color: '#64748B' }}>الكود موجود في رسالة واتساب من مولدتك</p>
-        <p className="text-[10px]" style={{ color: '#94A3B8' }}>مدعوم من أمبير ⚡</p>
+          <p className="text-xs" style={{ color: '#8E8E93' }}>الكود موجود في رسالة واتساب من مولدتك</p>
+          <p className="text-[10px]" style={{ color: '#94A3B8' }}>مدعوم من أمبير ⚡</p>
+        </div>
       </div>
     </div>
   )
