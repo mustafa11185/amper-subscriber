@@ -88,7 +88,7 @@ export default function HomePage() {
     <div className="min-h-dvh flex flex-col" style={{ background: '#FFFFFF' }}>
       {/* Top gradient section */}
       <div style={{
-        background: 'linear-gradient(135deg, #1B4FD8, #2563EB)',
+        background: 'linear-gradient(135deg, #1A56A0, #2563EB)',
         padding: '60px 24px 48px',
         textAlign: 'center',
         color: 'white',
@@ -134,10 +134,10 @@ export default function HomePage() {
               height: 56,
               fontSize: 22,
               background: '#F8F9FF',
-              border: code ? '1.5px solid #1B4FD8' : '1.5px solid rgba(0,0,0,0.06)',
+              border: code ? '1.5px solid #1A56A0' : '1.5px solid rgba(0,0,0,0.06)',
               borderRadius: 14,
               color: '#0F172A',
-              caretColor: '#1B4FD8',
+              caretColor: '#1A56A0',
               boxShadow: '0 2px 8px rgba(15,23,42,0.06)',
             }}
           />
@@ -148,7 +148,7 @@ export default function HomePage() {
             onClick={handleSubmit}
             disabled={loading || cleanCode(code).length < 10}
             className="w-full h-14 text-white text-base font-bold disabled:opacity-50 flex items-center justify-center gap-2"
-            style={{ background: '#1B4FD8', borderRadius: 14 }}
+            style={{ background: '#1A56A0', borderRadius: 14 }}
           >
             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
             {loading ? 'جاري الدخول...' : 'دخول'}

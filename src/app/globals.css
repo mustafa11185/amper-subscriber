@@ -2,9 +2,9 @@
 
 :root {
   /* Amper Blue — matched to manager app */
-  --brand-primary: #1B4FD8;
+  --brand-primary: #1A56A0;
   --brand-light: #EBF0FF;
-  --brand-gradient: linear-gradient(135deg, #1B4FD8, #2563EB);
+  --brand-gradient: linear-gradient(135deg, #1A56A0, #2563EB);
   --bg-base: #F0F4FF;
   --bg-surface: #FFFFFF;
   --bg-muted: #F8F9FF;

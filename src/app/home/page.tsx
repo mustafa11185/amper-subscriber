@@ -94,12 +94,12 @@ export default function SubscriberHomePage() {
   if (loading || !data) {
     return (
       <div className="flex items-center justify-center min-h-dvh" style={{ background: '#F0F4FF' }}>
-        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#1B4FD8' }} />
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#1A56A0' }} />
       </div>
     )
   }
 
-  const brandColor = data.settings.primary_color || '#1B4FD8'
+  const brandColor = data.settings.primary_color || '#1A56A0'
   const inv = data.current_invoice
   const invoiceDue = inv ? inv.total_amount_due - inv.amount_paid : 0
   const hasPayment = data.settings.furatpay_enabled || data.settings.active_gateway === 'aps'
@@ -217,7 +217,7 @@ export default function SubscriberHomePage() {
       <div className="flex-1 pb-20" style={{ background: '#F0F4FF', color: '#0F172A' }}>
         {/* Header */}
         <div style={{
-          background: 'linear-gradient(135deg, #1B4FD8, #2563EB)',
+          background: 'linear-gradient(135deg, #1A56A0, #2563EB)',
           padding: '20px 16px 24px',
           color: 'white',
           position: 'relative',
@@ -246,7 +246,7 @@ export default function SubscriberHomePage() {
                   <button
                     onClick={() => setTab('pay')}
                     className="text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 flex-shrink-0"
-                    style={{ background: '#1B4FD8', color: '#FFF' }}
+                    style={{ background: '#1A56A0', color: '#FFF' }}
                   >
                     ادفع الآن
                     <ArrowLeft className="w-3 h-3" />
@@ -296,7 +296,7 @@ export default function SubscriberHomePage() {
                   <button
                     onClick={() => setTab('pay')}
                     className="w-full text-white text-sm font-bold mt-6"
-                    style={{ background: '#1B4FD8', height: 52, borderRadius: 14 }}
+                    style={{ background: '#1A56A0', height: 52, borderRadius: 14 }}
                   >
                     ادفع الآن
                   </button>
@@ -331,7 +331,7 @@ export default function SubscriberHomePage() {
                     <p className="text-sm font-bold text-right" style={{ color: '#0F172A' }}>سجل الدفعات</p>
                     <p className="text-[10px] text-right" style={{ color: '#94A3B8' }}>عرض جميع الدفعات السابقة</p>
                   </div>
-                  <History className="w-5 h-5" style={{ color: '#1B4FD8' }} />
+                  <History className="w-5 h-5" style={{ color: '#1A56A0' }} />
                 </div>
               </button>
 
@@ -358,7 +358,7 @@ export default function SubscriberHomePage() {
                   <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>تواصل مع صاحب المولدة لتفعيل الدفع الإلكتروني</p>
                   {data.settings.collector_call_enabled && (
                     <button onClick={handleCallCollector} disabled={callingCollector}
-                      className="w-full h-12 rounded-xl text-sm font-bold text-white disabled:opacity-60" style={{ background: '#1B4FD8' }}>
+                      className="w-full h-12 rounded-xl text-sm font-bold text-white disabled:opacity-60" style={{ background: '#1A56A0' }}>
                       {callingCollector ? 'جاري...' : '📞 أرسل الجابي'}
                     </button>
                   )}
@@ -366,7 +366,7 @@ export default function SubscriberHomePage() {
               ) : (
                 <div className="space-y-3">
                   {/* Amount card */}
-                  <div className="overflow-hidden" style={{ background: 'linear-gradient(135deg, #1B4FD8, #2563EB)', borderRadius: 16 }}>
+                  <div className="overflow-hidden" style={{ background: 'linear-gradient(135deg, #1A56A0, #2563EB)', borderRadius: 16 }}>
                     <div className="p-5 text-center">
                       <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>المبلغ المستحق</p>
                       <p className="font-num text-4xl font-bold" style={{ color: '#FFFFFF' }}>{fmt(totalDue)}<span className="text-sm mr-1" style={{ color: 'rgba(255,255,255,0.5)' }}>د.ع</span></p>
@@ -504,7 +504,7 @@ export default function SubscriberHomePage() {
               {data.settings.collector_call_enabled && (
                 <button onClick={handleCallCollector} disabled={callingCollector}
                   className="w-full h-14 rounded-xl text-white text-sm font-bold disabled:opacity-60 flex items-center justify-center gap-2"
-                  style={{ background: '#1B4FD8' }}>
+                  style={{ background: '#1A56A0' }}>
                   <PhoneCall className="w-5 h-5" />
                   {callingCollector ? 'جاري...' : '📞 اطلب زيارة الجابي'}
                 </button>
@@ -570,7 +570,7 @@ export default function SubscriberHomePage() {
                 style={{ background: '#F8FAFC', border: '1px solid var(--border)' }} />
               <button onClick={handleCardPay} disabled={payLoading || !cardNum || !cardExpiry || !cardCvv}
                 className="w-full py-4 rounded-xl text-white font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
-                style={{ background: payLoading ? '#94A3B8' : '#1B4FD8' }}>
+                style={{ background: payLoading ? '#94A3B8' : '#1A56A0' }}>
                 {payLoading ? '⏳ جارٍ الدفع...' : `ادفع الآن ${fmt(totalDue)} د.ع`}
               </button>
               <p className="text-center text-[10px] mt-2" style={{ color: '#94A3B8' }}>🔒 مشفّر بـ SSL 256-bit</p>
@@ -627,14 +627,14 @@ export default function SubscriberHomePage() {
               return (
                 <button key={t.key} onClick={() => onTabClick(t.key)} className="flex flex-col items-center gap-1 py-2 px-3">
                   <span className="relative inline-block">
-                    <Icon className="w-5 h-5" style={{ color: isActive ? '#1B4FD8' : '#8E8E93' }} />
+                    <Icon className="w-5 h-5" style={{ color: isActive ? '#1A56A0' : '#8E8E93' }} />
                     {t.key === 'alerts' && unreadCount > 0 && (
                       <span className="absolute -top-1.5 -right-2 flex items-center justify-center rounded-full text-white font-bold" style={{ background: '#C62828', minWidth: '16px', height: '16px', fontSize: '9px', padding: '0 4px' }}>
                         {unreadCount > 9 ? '9+' : unreadCount}
                       </span>
                     )}
                   </span>
-                  <span className="text-[10px]" style={{ color: isActive ? '#1B4FD8' : '#8E8E93', fontWeight: isActive ? 700 : 400 }}>{t.label}</span>
+                  <span className="text-[10px]" style={{ color: isActive ? '#1A56A0' : '#8E8E93', fontWeight: isActive ? 700 : 400 }}>{t.label}</span>
                 </button>
               )
             })}
@@ -754,7 +754,7 @@ function RatingCard({ subscriberId }: { subscriberId: string }) {
         onClick={handleSubmit}
         disabled={rating === 0 || submitting}
         className="w-full h-11 rounded-xl text-white text-sm font-bold disabled:opacity-50 flex items-center justify-center gap-2"
-        style={{ background: rating > 0 ? '#1B4FD8' : '#94A3B8' }}
+        style={{ background: rating > 0 ? '#1A56A0' : '#94A3B8' }}
       >
         {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
         {submitting ? 'جاري الإرسال...' : 'إرسال التقييم'}
@@ -877,7 +877,7 @@ function ChangeRequestCard({ amperage, subscriptionType }: { amperage: number; s
             onClick={handleSubmit}
             disabled={submitting || (Number(reqAmperage) === amperage && reqType === subscriptionType)}
             className="w-full h-11 rounded-xl text-white text-sm font-bold disabled:opacity-50 flex items-center justify-center gap-2"
-            style={{ background: '#1B4FD8' }}
+            style={{ background: '#1A56A0' }}
           >
             {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             {submitting ? 'جاري الإرسال...' : 'إرسال الطلب'}
@@ -926,7 +926,7 @@ function InstallBanner() {
           <button onClick={async () => {
             if (prompt) { prompt.prompt(); const r = await prompt.userChoice; if (r.outcome === 'accepted') setShow(false) }
           }}
-            className="w-full h-9 rounded-xl text-white text-xs font-bold" style={{ background: '#1B4FD8' }}>
+            className="w-full h-9 rounded-xl text-white text-xs font-bold" style={{ background: '#1A56A0' }}>
             إضافة للشاشة الرئيسية
           </button>
         )}
