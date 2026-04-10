@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
+import AmperLogo from '@/components/AmperLogo'
 
 export default function HomePage() {
   const router = useRouter()
@@ -94,16 +95,8 @@ export default function HomePage() {
         color: 'white',
         borderRadius: '0 0 32px 32px',
       }}>
-        <div style={{ width: 72, height: 72, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
-          <svg width="56" height="56" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="24,3 40,3 48,19 40,35 24,35 16,19" fill="#0E2A50" stroke="#1A56A0" strokeWidth="1.5"/>
-            <polygon points="24,7 38,7 45,19 38,31 24,31 17,19" fill="none" stroke="#1A3A6B" strokeWidth="0.5"/>
-            <circle cx="24" cy="3" r="2" fill="#2563EB" opacity="0.6"/>
-            <circle cx="40" cy="3" r="2" fill="#2563EB" opacity="0.6"/>
-            <circle cx="48" cy="19" r="2" fill="#2563EB" opacity="0.6"/>
-            <polygon points="30,7 21,19 27,19 18,33 38,17 30,17" fill="#F59E0B"/>
-            <polygon points="30,7 29,9 32,17 38,17" fill="#FCD34D" opacity="0.45"/>
-          </svg>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+          <AmperLogo variant="icon" size="xl" />
         </div>
         <h1 className="text-3xl font-bold" style={{ fontFamily: 'Rajdhani, sans-serif' }}>أمبير</h1>
         <p className="text-sm mt-2" style={{ opacity: 0.7 }}>نظام إدارة المولدات الذكي</p>

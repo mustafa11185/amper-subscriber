@@ -11,6 +11,7 @@ import toast, { Toaster } from 'react-hot-toast'
 
 const fmt = (n: number) => Number(n).toLocaleString('en')
 import { formatBillingMonth, monthName } from '@/lib/billing-months'
+import AmperLogo from '@/components/AmperLogo'
 
 type SubData = {
   id: string; name: string; serial_number: string; subscription_type: string
@@ -222,7 +223,7 @@ export default function SubscriberHomePage() {
           color: 'white',
           position: 'relative',
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <button onClick={logout} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: 12, padding: '8px 12px', color: 'white', cursor: 'pointer' }}>
               <LogOut size={18} />
             </button>
@@ -230,7 +231,9 @@ export default function SubscriberHomePage() {
               <div style={{ fontSize: 20, fontWeight: 900 }}>{data.name}</div>
               <div style={{ fontSize: 12, opacity: 0.7, marginTop: 2 }}>{data.branch_name}</div>
             </div>
-            <div style={{ width: 42 }} />
+            <div style={{ width: 42, height: 42, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <AmperLogo variant="icon" size="md" />
+            </div>
           </div>
         </div>
 

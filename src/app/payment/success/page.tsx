@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import AmperLogo from '@/components/AmperLogo'
 
 function SuccessContent() {
   const router = useRouter()
@@ -51,6 +52,9 @@ function SuccessContent() {
           background: '#1B4FD8',
           color: 'white', border: 'none', fontSize: 14, fontWeight: 700, cursor: 'pointer',
         }}>العودة الآن</button>
+        <div style={{ marginTop: 24, display: 'flex', justifyContent: 'center', opacity: 0.6 }}>
+          <AmperLogo variant="light" size="sm" showTagline={false} />
+        </div>
       </div>
     </div>
   )
