@@ -52,12 +52,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "الكود غير صحيح" }, { status: 404 });
     }
 
+    // Secure session cookie — 30 days (not 1 year) so shared-device
+    // subscribers don't leave long-lived sessions behind. Strict
+    // sameSite prevents CSRF. Secure flag ensures HTTPS-only.
     const cookieStore = await cookies();
     cookieStore.set("subscriber_id", subscriber.id, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
       path: "/",
-      maxAge: 365 * 24 * 60 * 60,
-      sameSite: "lax",
+      maxAge: 30 * 24 * 60 * 60, // 30 days (was 365)
+      sameSite: "strict",
     });
 
     return NextResponse.json({
