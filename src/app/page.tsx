@@ -147,8 +147,8 @@ export default function HomePage() {
             {loading ? 'جاري الدخول...' : 'دخول'}
           </button>
 
-          <p className="text-xs" style={{ color: '#8E8E93' }}>الكود موجود في رسالة واتساب من مولدتك</p>
-          <p className="text-[10px]" style={{ color: '#94A3B8' }}>مدعوم من أمبير ⚡</p>
+          <p className="text-xs" style={{ color: '#8E8E93' }}>الكود مطبوع على إيصال الدفع أو رسالة واتساب من مولدتك</p>
+          <p className="text-[10px]" style={{ color: '#94A3B8' }}>مدعوم من أمبير ⚡ · v2.6</p>
         </div>
       </div>
     </div>

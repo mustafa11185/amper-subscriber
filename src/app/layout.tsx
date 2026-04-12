@@ -3,8 +3,14 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "فاتورتي — أمبير",
-  description: "متابعة الفاتورة وحالة المولدة",
+  description: "متابعة فاتورة الكهرباء وحالة المولدة — ادفع إلكترونياً وتابع فاتورتك",
   manifest: "/manifest.json",
+  keywords: "فاتورة كهرباء، مولدة، أمبير، دفع إلكتروني، amper",
+  openGraph: {
+    title: "فاتورتي — أمبير",
+    description: "متابعة فاتورة الكهرباء وحالة المولدة",
+    locale: "ar_IQ",
+  },
 };
 
 export default function RootLayout({

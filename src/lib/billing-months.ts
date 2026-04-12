@@ -13,12 +13,14 @@ export const MONTHS = [
   { num: 12, ar: 'ديسمبر', local: 'كانون الأول' },
 ]
 
+// Unified format: "<number> <Iraqi name> [year]"
+// Matches the Flutter app's MonthNames.format() output.
 export function formatBillingMonth(month: number, year: number): string {
   const m = MONTHS.find(x => x.num === month)
-  return m ? `${m.local} ${month} — ${year}` : `${month}/${year}`
+  return m ? `${month} ${m.local} ${year}` : `${month}/${year}`
 }
 
 export function monthName(month: number): string {
   const m = MONTHS.find(x => x.num === month)
-  return m ? `${m.local} ${month}` : `${month}`
+  return m ? `${month} ${m.local}` : `${month}`
 }

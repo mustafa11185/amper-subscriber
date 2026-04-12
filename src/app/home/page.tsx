@@ -168,7 +168,8 @@ export default function SubscriberHomePage() {
     setPayLoading(false)
   }
 
-  function logout() {
+  async function logout() {
+    try { await fetch('/api/logout', { method: 'POST' }) } catch (_) {}
     document.cookie = 'subscriber_id=; path=/; max-age=0'
     localStorage.removeItem('amper_code')
     router.replace('/')
